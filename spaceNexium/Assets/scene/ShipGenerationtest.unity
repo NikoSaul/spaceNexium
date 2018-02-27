@@ -273,7 +273,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moduleBase: {fileID: 867917805}
-  geneticCode: 2 0 0 0 E30000
+  codeGen: 0000111100001111111100000000111111110000000011110000111100100111101100001001111
 --- !u!4 &1428894170
 Transform:
   m_ObjectHideFlags: 0
