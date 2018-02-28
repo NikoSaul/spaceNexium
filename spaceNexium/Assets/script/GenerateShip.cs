@@ -7,10 +7,6 @@ using UnityEngine;
 
 public class GenerateShip : MonoBehaviour
 {
-
-    [SerializeField]
-    private GameObject moduleBase;
-
     [SerializeField]
     private string codeGen;
 
@@ -30,19 +26,20 @@ public class GenerateShip : MonoBehaviour
     private int placement;
 
     private int design1;
-    private int orientation1;
+    private int orientationOrSubType1;
     private int type1;
 
     private int design2;
-    private int orientation2;
+    private int orientationOrSubType2;
     private int type2;
 
     private int design3;
-    private int orientation3;
+    private int orientationOrSubType3;
     private int type3;
 
     [SerializeField]
     private GameObject shipPrefab;
+
     private Ship ship;
 
     private void Awake()
@@ -71,52 +68,57 @@ public class GenerateShip : MonoBehaviour
         lightColor.g = tempInt * 8;
         lightColor.b = tempInt * 8;
 
-        this.ship.setColorGlobal(this.color1, this.color2, this.lightColor);
+        this.ship.SetColorGlobal(this.color1, this.color2, this.lightColor);
 
         // - - - - - - - - - - - - - - - - -  Cockpit - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 8), 2);
         lenghtActu += 8;
         cockpit = tempInt;
 
-        this.ship.setCockpit(0, this.cockpit);
+        this.ship.SetCockpit(0, this.cockpit);
 
         // - - - - - - - - - - - - - - - - - base 1 - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 8), 2);
         lenghtActu += 8;
         base1 = tempInt;
+
+        this.ship.SetBases(0, base1);
         // - - - - - - - - - - - - - - - - - base 2 - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 8), 2);
         lenghtActu += 8;
         base2 = tempInt;
 
+        this.ship.SetBases(1, base2);
         // - - - - - - - - - - - - - - - - - base 3 - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 8), 2);
         lenghtActu += 8;
         base3 = tempInt;
 
+        this.ship.SetBases(2, base3);
         // - - - - - - - - - - - - - - - - - Wings 1 - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 5), 2);
         lenghtActu += 5;
         wings1 = tempInt;
 
+        this.ship.SetWings(0, wings1);
         // - - - - - - - - - - - - - - - - - Wings 2 - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 5), 2);
         lenghtActu += 5;
         wings2 = tempInt;
 
+        this.ship.SetWings(1, wings2);
         // - - - - - - - - - - - - - - - - - Wings 3 - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 5), 2);
         lenghtActu += 5;
         wings3 = tempInt;
 
+        this.ship.SetWings(2, wings3);
         // - - - - - - - - - - - - - - - - - Placement - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 2), 2);
         lenghtActu += 2;
         placement = tempInt;
 
         // - - - - - - - - - - - - - - - - - - GAME PLAY - - - - - - - - - - - - - - - - - - - - - - - - - -
-        // 64 
-
         // - - - - - - - - - - - - - - - - - type 1 - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu + 7, 1), 2);
         type1 = tempInt;
@@ -134,7 +136,7 @@ public class GenerateShip : MonoBehaviour
         // - - - - - - -  - - - - -  - - - - subtype => SUBTYPE - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 7 - tempLenght), 2);
         lenghtActu += 7 - tempLenght + 1;
-        orientation1 = tempInt;
+        orientationOrSubType1 = tempInt;
 
         // - - - - - - - - - - - - - - - - - type 2 - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu + 7, 1), 2);
@@ -153,7 +155,7 @@ public class GenerateShip : MonoBehaviour
         // - - - - - - -  - - - - -  - - - - subtype => SUBTYPE - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 7 - tempLenght), 2);
         lenghtActu += 7 - tempLenght + 1;
-        orientation2 = tempInt;
+        orientationOrSubType2 = tempInt;
 
         // - - - - - - - - - - - - - - - - - type 3 - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu + 7, 1), 2);
@@ -172,9 +174,15 @@ public class GenerateShip : MonoBehaviour
         // - - - - - - -  - - - - -  - - - - subtype => SUBTYPE - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 7 - tempLenght), 2);
         lenghtActu += 7 - tempLenght + 1;
-        orientation3 = tempInt;
+        orientationOrSubType3 = tempInt;
+
+        // Init Game play - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  - - - - - - - - - - - -
+        initGamePlay(type1, 0, design1, orientationOrSubType1);
+        initGamePlay(type2, 1, design2, orientationOrSubType2);
+        initGamePlay(type3, 2, design3, orientationOrSubType3);
     }
 
+    // Example - - 
     // 00000 11111 00000 11111111 00000000 11111111 00000000 11111 00000 11111 00 11111 00 1 00000 11 0 11111 00 1
     // 0000011111000001111111100000000111111110000000011111000001111100111110010000011011111001
     // 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -189,6 +197,18 @@ public class GenerateShip : MonoBehaviour
     void Update()
     {
 
+    }
+
+    private void initGamePlay(int i, int id, int design, int orientationOrSubType)
+    {
+        if (i == 1) // Protection
+        {
+            this.ship.SetProtections(id, design, orientationOrSubType, this.placement);
+        }
+        else // CANON
+        {
+            this.ship.SetCanons(id, design, orientationOrSubType, this.placement);
+        }
     }
 
 }
