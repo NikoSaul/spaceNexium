@@ -10,6 +10,7 @@ public class WeaponRenderer : PartRenderer {
     // Use this for initialization
     void Start () {
         type = "w";
+        layerOrder = 5;
         InstantiatePiece(pieceA1.transform,"0");
 	}
 	
