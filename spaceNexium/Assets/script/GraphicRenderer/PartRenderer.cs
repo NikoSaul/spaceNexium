@@ -9,13 +9,15 @@ public class PartRenderer : MonoBehaviour
 
     protected string type;
 
-    internal int id = 0;
+    protected int layerOrder;
 
-    internal Color brightColor = Color.blue;
+    public int id = 0;
+
+    internal Color brightColor = Color.cyan;
 
     internal Color darkColor = Color.blue;
 
-    internal Color lightColor = Color.blue;
+    internal Color lightColor = Color.white;
 
     // Use this for initialization
     void Awake()
@@ -26,7 +28,7 @@ public class PartRenderer : MonoBehaviour
     protected void InstantiatePiece(Transform parent, string category)
     {
         GameObject piece = Instantiate(piecePrefab, parent);
-        piece.GetComponent<PieceRenderer>().setProperties(type, id, category, brightColor, darkColor, lightColor);
+        piece.GetComponent<PieceRenderer>().setProperties(type, id, category, brightColor, darkColor, lightColor, layerOrder);
 
     }
 
