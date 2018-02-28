@@ -4,8 +4,8 @@ using UnityEngine;
 
 public enum SlotType
 {
-    missile,
     energy,
+    missile,
     laser
 }
 
