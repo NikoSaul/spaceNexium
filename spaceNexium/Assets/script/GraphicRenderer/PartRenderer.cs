@@ -9,7 +9,7 @@ public class PartRenderer : MonoBehaviour
 
     protected string type;
 
-    internal string id = "0";
+    internal int id = 0;
 
     internal Color brightColor = Color.blue;
 

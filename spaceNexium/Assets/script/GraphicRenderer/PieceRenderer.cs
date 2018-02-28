@@ -7,7 +7,7 @@ public class PieceRenderer : MonoBehaviour
 
     private string type;
 
-    private string id;
+    private int id;
 
     private string category;
 
@@ -45,7 +45,7 @@ public class PieceRenderer : MonoBehaviour
 
     }
 
-    internal void setProperties(string type, string id, string category, Color bright, Color dark, Color light)
+    internal void setProperties(string type, int id, string category, Color bright, Color dark, Color light)
     {
         this.id = id;
         this.type = type;

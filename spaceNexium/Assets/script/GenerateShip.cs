@@ -41,34 +41,44 @@ public class GenerateShip : MonoBehaviour
     private int orientation3;
     private int type3;
 
+    [SerializeField]
+    private GameObject shipPrefab;
+    private Ship ship;
+
     private void Awake()
     {
+
+        this.ship = this.shipPrefab.GetComponent<Ship>();
         // - - - - - - - - - - - - - - - - -  Color1 - - - - - - - - - - - - - -
         int lenghtActu = 0; // * * * * Mettre + 24 * * * * (commence à 24)
         int tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 5), 2);
         lenghtActu += 5;
-        color1.r = tempInt * 32;
-        color1.g = tempInt * 32;
-        color1.b = tempInt * 32;
+        color1.r = tempInt * 8;
+        color1.g = tempInt * 8;
+        color1.b = tempInt * 8;
 
         // - - - - - - - - - - - - - - - - -  Color2 - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 5), 2);
         lenghtActu += 5;
-        color2.r = tempInt * 16;
-        color2.g = tempInt * 16;
-        color2.b = tempInt * 16;
+        color2.r = tempInt * 8;
+        color2.g = tempInt * 8;
+        color2.b = tempInt * 8;
 
         // - - - - - - - - - - - - - - - - - lightColor - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 5), 2);
         lenghtActu += 5;
-        lightColor.r = tempInt * 16;
-        lightColor.g = tempInt * 16;
-        lightColor.b = tempInt * 16;
+        lightColor.r = tempInt * 8;
+        lightColor.g = tempInt * 8;
+        lightColor.b = tempInt * 8;
+
+        this.ship.setColorGlobal(this.color1, this.color2, this.lightColor);
 
         // - - - - - - - - - - - - - - - - -  Cockpit - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 8), 2);
         lenghtActu += 8;
         cockpit = tempInt;
+
+        this.ship.setCockpit(0, this.cockpit);
 
         // - - - - - - - - - - - - - - - - - base 1 - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 8), 2);
@@ -167,6 +177,7 @@ public class GenerateShip : MonoBehaviour
 
     // 00000 11111 00000 11111111 00000000 11111111 00000000 11111 00000 11111 00 11111 00 1 00000 11 0 11111 00 1
     // 0000011111000001111111100000000111111110000000011111000001111100111110010000011011111001
+    // 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
     // Use this for initialization
     void Start()
     {
