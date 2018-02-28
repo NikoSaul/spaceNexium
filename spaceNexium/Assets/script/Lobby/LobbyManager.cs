@@ -10,7 +10,7 @@ public class LobbyManager : MonoBehaviour
 	{
 		instance = this;
         if(!Statics.isInit)
-            SceneManager.LoadScene("Global");
+            SceneManager.LoadScene("Global", LoadSceneMode.Additive);
 	}
 
 	private void Start()
