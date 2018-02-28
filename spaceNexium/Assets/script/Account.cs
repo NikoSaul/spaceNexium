@@ -223,16 +223,13 @@ public class Account : MonoBehaviour
 
     public IEnumerator NexiumApprove(string spender, BigInteger value)
     {
-        //yield return GetPrivateKeyFromKeystore(Password.text);
-
-        //Debug.Log("Private : " + accountPrivateKey);
-
-        //if (accountPrivateKey == "")
-        //{
-        //    yield break;
-        //}
-
-        accountPrivateKey = "01f285756076affa1d10cf2b69d2460a0d30d9edbe81d11ea86326a89f222224";
+        accountPrivateKey = "";
+        yield return GetPrivateKeyFromKeystore(Password.text);
+        
+        if (accountPrivateKey == "")
+        {
+            yield break;
+        }        
 
         var transactionInput = m_nexiumContract.Create_approve_TransactionInput(
             accountAddress,
