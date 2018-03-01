@@ -2,21 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ReactorRenderer : PartRenderer {
+public class ReactorRenderer : PartRenderer
+{
 
     [SerializeField]
     private GameObject pieceA1;
 
-    // Use this for initialization
-    void Start()
+    protected override void CreatePart()
     {
         type = "r";
         layerOrder = 3;
         InstantiatePiece(pieceA1.transform, "0");
     }
-
-    // Update is called once per frame
-    void Update () {
-		
-	}
 }
