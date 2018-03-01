@@ -28,6 +28,7 @@ public class Ship : MonoBehaviour {
     private Color color1;
     private Color color2;
     private Color lightColor;
+    private int slotNumber = 0;
 
     // Use this for initialization
     void Start () {
@@ -63,32 +64,34 @@ public class Ship : MonoBehaviour {
 
 
     // - - - - - - - - - - - - - - - - - - GAME PLAY - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public void SetCanons(int i, int id, int orientation, int placement)
+    public void SetCanons(int i, int id, int orientation)
     {
         this.canons[i].SetGeneticAndCreate(id, this.color1, this.color2, this.lightColor);
-        int tempSlot = Mathf.FloorToInt(id / 4);
-        this.slots[i] = new Slot((SlotType)tempSlot, this.canons[i]);
+        this.slots[slotNumber] = new Slot((SlotType)slotNumber, this.canons[i]);
+        slotNumber++;
     }
 
-    public void SetProtections(int i, int id, int subType, int placement)
+    public void SetProtections(int i, int id, int subType)
     {
         int tempSlot = Mathf.FloorToInt(id / 4);
         if (tempSlot < 4)
         {
-            SetReactors(i, id, subType, placement);
+            SetReactors(i, id, subType);
         } else
         {
             this.protections[i].SetGeneticAndCreate(id, this.color1, this.color2, this.lightColor);
-            this.slots[i] = new Slot((SlotType)tempSlot, this.protections[i]);
+            this.slots[slotNumber] = new Slot((SlotType)slotNumber, this.protections[i]);
+            slotNumber++;
         }
     }
 
     // reactor counter energy canon
-    public void SetReactors(int i, int id, int subType, int placement)
+    public void SetReactors(int i, int id, int subType)
     {
         this.reactors[i].SetGeneticAndCreate(id, this.color1, this.color2, this.lightColor);
         int tempSlot = Mathf.FloorToInt(id / 4);
-        this.slots[i] = new Slot((SlotType)tempSlot, this.reactors[i]);
+        this.slots[slotNumber] = new Slot((SlotType)slotNumber, this.reactors[i]);
+        slotNumber++;
     }
 
 }
