@@ -39,16 +39,16 @@ public class GenerateShip : MonoBehaviour
     private int orientationOrSubType3;
     private int type3;
 
-    [SerializeField]
-    private GameObject shipPrefab;
-
     private Ship ship;
 
     private void Awake()
     {
         colors = new Color[6];
         initColor();
-        this.ship = this.shipPrefab.GetComponent<Ship>();
+
+        GameObject shipPrefab = (GameObject)Resources.Load("prefabs/ShipPattern");
+        GameObject shipTemp = Instantiate(shipPrefab,this.transform);
+        this.ship = shipTemp.GetComponent<Ship>();
         // - - - - - - - - - - - - - - - - -  Color1 - - - - - - - - - - - - - -
         int lenghtActu = 0; // * * * * Mettre + 24 * * * * (commence à 24)
         int tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 5), 2);
@@ -206,15 +206,25 @@ public class GenerateShip : MonoBehaviour
         }
         else // CANON
         {
-           // if (id == 0)
+            if (id == 0)
                 this.ship.SetCanons(id, design, orientationOrSubType, this.placement);
-           /* else if (id == 1)
+            else if (id == 1)
             {
                 if (placement == 0)
-                {
-
-                }
-            }*/
+                    this.ship.SetCanons(1, design, orientationOrSubType, this.placement);
+                else if (placement == 1)
+                    this.ship.SetCanons(4, design, orientationOrSubType, this.placement);
+                else
+                    this.ship.SetCanons(3, design, orientationOrSubType, this.placement);
+            } else
+            {
+                if (placement == 0)
+                    this.ship.SetCanons(2, design, orientationOrSubType, this.placement);
+                else if (placement == 1)
+                    this.ship.SetCanons(5, design, orientationOrSubType, this.placement);
+                else
+                    this.ship.SetCanons(6, design, orientationOrSubType, this.placement);
+            }
         }
     }
 
