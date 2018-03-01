@@ -588,7 +588,7 @@ GameObject:
   - component: {fileID: 114529773665425464}
   - component: {fileID: 212591150764721464}
   m_Layer: 0
-  m_Name: Ship 1
+  m_Name: ShipPattern
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
