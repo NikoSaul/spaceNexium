@@ -2,15 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WingRenderer : PartRenderer {
+public class WingRenderer : PartRenderer
+{
+    protected override void CreatePart()
+    {
+        throw new System.NotImplementedException();
+    }
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }

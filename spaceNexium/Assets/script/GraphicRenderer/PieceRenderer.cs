@@ -11,6 +11,8 @@ public class PieceRenderer : MonoBehaviour
 
     private string category;
 
+    private int layerPosition;
+
     public SpriteRenderer lineLayer;
 
     public SpriteRenderer brightLayer;
@@ -18,6 +20,8 @@ public class PieceRenderer : MonoBehaviour
     public SpriteRenderer darkLayer;
 
     public SpriteRenderer lightLayer;
+
+    public SpriteRenderer pipeLayer;
     // Use this for initialization
 
     void Start()
@@ -32,6 +36,12 @@ public class PieceRenderer : MonoBehaviour
         Texture2D darkTex = (Texture2D)Resources.Load("sprites/" + type + "/" + id + "/" + category + "/" + type + "_" + id + "_" + category + "_d");
         darkLayer.sprite = Sprite.Create(darkTex, new Rect(0, 0, lineTex.width, lineTex.height), new Vector2(0, 0));
 
+        Texture2D pipeTex = (Texture2D)Resources.Load("sprites/" + type + "/" + id + "/" + category + "/" + type + "_" + id + "_" + category + "_p");
+        if (pipeTex != null)
+        {
+            pipeLayer.sprite = Sprite.Create(pipeTex, new Rect(0, 0, lineTex.width, lineTex.height), new Vector2(0, 0));
+        }
+
         Texture2D lightTex = (Texture2D)Resources.Load("sprites/" + type + "/" + id + "/" + category + "/" + type + "_" + id + "_" + category + "_l");
         if (lightTex != null)
         {
@@ -45,7 +55,7 @@ public class PieceRenderer : MonoBehaviour
 
     }
 
-    internal void setProperties(string type, int id, string category, Color bright, Color dark, Color light)
+    internal void setProperties(string type, int id, string category, Color bright, Color dark, Color light, int layerPosition)
     {
         this.id = id;
         this.type = type;
@@ -54,5 +64,11 @@ public class PieceRenderer : MonoBehaviour
         brightLayer.color = bright;
         darkLayer.color = dark;
         lightLayer.color = light;
+
+        lineLayer.sortingOrder += 5 * layerPosition;
+        brightLayer.sortingOrder += 5 * layerPosition;
+        darkLayer.sortingOrder += 5 * layerPosition;
+        lightLayer.sortingOrder += 5 * layerPosition;
+        pipeLayer.sortingOrder += 5 * layerPosition;
     }
 }

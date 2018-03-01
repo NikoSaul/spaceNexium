@@ -2,32 +2,42 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PartRenderer : MonoBehaviour
+public abstract class PartRenderer : MonoBehaviour
 {
 
     protected GameObject piecePrefab;
 
     protected string type;
 
+    protected int layerOrder;
+
     internal int id = 0;
 
-    internal Color brightColor = Color.blue;
+    internal Color brightColor = Color.cyan;
 
     internal Color darkColor = Color.blue;
 
-    internal Color lightColor = Color.blue;
+    internal Color lightColor = Color.white;
 
-    // Use this for initialization
-    void Awake()
+    /// <summary>
+    /// Set the genetic information and create the part
+    /// </summary>
+    public void SetGeneticAndCreate(int id, Color brightColor, Color darkColor, Color lightColor)
     {
-        piecePrefab = (GameObject)Resources.Load("prefabs/piece");
+        this.id = id;
+        this.brightColor = brightColor;
+        this.darkColor = darkColor;
+        this.lightColor = lightColor;
+        CreatePart();
     }
+
+    protected abstract void CreatePart();
 
     protected void InstantiatePiece(Transform parent, string category)
     {
+        piecePrefab = (GameObject)Resources.Load("prefabs/piece");
         GameObject piece = Instantiate(piecePrefab, parent);
-        piece.GetComponent<PieceRenderer>().setProperties(type, id, category, brightColor, darkColor, lightColor);
-
+        piece.GetComponent<PieceRenderer>().setProperties(type, id, category, brightColor, darkColor, lightColor, layerOrder);
     }
 
 }
