@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ship : MonoBehaviour {
-
-    private Slot[] slots = new Slot[3];
+public class Ship : MonoBehaviour
+{
+    /// <summary>
+    /// Les 3 slots de module du vaisseau (arme ou défense)
+    /// </summary>
+    public Slot[] m_Slots = new Slot[3];
 
     [SerializeField]
     private PartRenderer[] cockpits;
@@ -28,16 +31,6 @@ public class Ship : MonoBehaviour {
     private Color color1;
     private Color color2;
     private Color lightColor;
-
-    // Use this for initialization
-    void Start () {
-
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
     public void setColorGlobal(Color color1, Color color2, Color lightColor)
     {

@@ -5,33 +5,30 @@ using UnityEngine;
 public enum Orientation
 {
     left,
-    midlle,
+    middle,
     right
 }
 
-
 public class Weapon : Slot
 {
+    /// <summary>
+    /// La direction où pointe l'arme
+    /// </summary>
+    public Orientation m_Direction;
 
-    private Orientation direction;
-    private Orientation position;
+    /// <summary>
+    /// La position de l'arme sur le vaisseau
+    /// </summary>
+    public Orientation m_Position;
 
-    public Weapon(SlotType type,PartRenderer sprite, Orientation direction, Orientation position) : base(type,sprite)
+    public Weapon(SlotType type,PartRenderer sprite, Orientation direction, Orientation position) : base(type, sprite)
     {
-        this.direction = direction;
-        this.position = position;
+        this.m_Direction = direction;
+        this.m_Position = position;
     }
 
-
-    // Use this for initialization
-    void Start()
+    public void Fire(Ship p_Ship_Target)
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        //TODO éventuellement déclencher une animation en destination du slot target
     }
 }
