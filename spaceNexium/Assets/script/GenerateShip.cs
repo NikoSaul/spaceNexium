@@ -43,8 +43,7 @@ public class GenerateShip : MonoBehaviour
 
     private void Awake()
     {
-        // ulong a = 24178516392292583000000000;
-
+     
         colors = new Color[6];
         initColor();
 
@@ -101,19 +100,19 @@ public class GenerateShip : MonoBehaviour
         lenghtActu += 5;
         wings1 = tempInt;
 
-       // this.ship.SetWings(0, wings1);
+        this.ship.SetWings(0, wings1);
         // - - - - - - - - - - - - - - - - - Wings 2 - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 5), 2);
         lenghtActu += 5;
         wings2 = tempInt;
 
-        //this.ship.SetWings(1, wings2);
+        this.ship.SetWings(1, wings2);
         // - - - - - - - - - - - - - - - - - Wings 3 - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 5), 2);
         lenghtActu += 5;
         wings3 = tempInt;
 
-        //this.ship.SetWings(2, wings3);
+        this.ship.SetWings(2, wings3);
         // - - - - - - - - - - - - - - - - - Placement - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 2), 2);
         lenghtActu += 2;
