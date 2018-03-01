@@ -19,12 +19,6 @@ public abstract class PartRenderer : MonoBehaviour
 
     internal Color lightColor = Color.white;
 
-
-    void Awake()
-    {
-        piecePrefab = (GameObject)Resources.Load("prefabs/piece");
-    }
-
     /// <summary>
     /// Set the genetic information and create the part
     /// </summary>
@@ -41,6 +35,7 @@ public abstract class PartRenderer : MonoBehaviour
 
     protected void InstantiatePiece(Transform parent, string category)
     {
+        piecePrefab = (GameObject)Resources.Load("prefabs/piece");
         GameObject piece = Instantiate(piecePrefab, parent);
         piece.GetComponent<PieceRenderer>().setProperties(type, id, category, brightColor, darkColor, lightColor, layerOrder);
     }

@@ -48,38 +48,24 @@ public class Ship : MonoBehaviour {
 
     public void SetCockpit(int i, int id)
     {
-        this.cockpits[i].id = id;
-        this.cockpits[i].brightColor = this.color1;
-        this.cockpits[i].darkColor = this.color2;
-        this.cockpits[i].lightColor = this.lightColor;
+        this.cockpits[i].SetGeneticAndCreate(id, this.color1, this.color2, this.lightColor);
     }
-
-
 
     public void SetBases(int i, int id)
     {
-        this.bases[i].id = id;
-        this.bases[i].brightColor = this.color1;
-        this.bases[i].darkColor = this.color2;
-        this.bases[i].lightColor = this.lightColor;
+        this.bases[i].SetGeneticAndCreate(id, this.color1, this.color2, this.lightColor);
     }
 
     public void SetWings(int i, int id)
     {
-        this.wings[i].id = id;
-        this.wings[i].brightColor = this.color1;
-        this.wings[i].darkColor = this.color2;
-        this.wings[i].lightColor = this.lightColor;
+        this.wings[i].SetGeneticAndCreate(id, this.color1, this.color2, this.lightColor);
     }
 
 
     // - - - - - - - - - - - - - - - - - - GAME PLAY - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void SetCanons(int i, int id, int orientation, int placement)
     {
-        this.canons[i].id = id;
-        this.canons[i].brightColor = this.color1;
-        this.canons[i].darkColor = this.color2;
-        this.canons[i].lightColor = this.lightColor;
+        this.canons[i].SetGeneticAndCreate(id, this.color1, this.color2, this.lightColor);
         int tempSlot = Mathf.FloorToInt(id / 4);
         this.slots[i] = new Slot((SlotType)tempSlot, this.canons[i]);
     }
@@ -92,10 +78,7 @@ public class Ship : MonoBehaviour {
             SetReactors(i, id, subType, placement);
         } else
         {
-            this.protections[i].id = id;
-            this.protections[i].brightColor = this.color1;
-            this.protections[i].darkColor = this.color2;
-            this.protections[i].lightColor = this.lightColor;
+            this.protections[i].SetGeneticAndCreate(id, this.color1, this.color2, this.lightColor);
             this.slots[i] = new Slot((SlotType)tempSlot, this.protections[i]);
         }
     }
@@ -103,10 +86,7 @@ public class Ship : MonoBehaviour {
     // reactor counter energy canon
     public void SetReactors(int i, int id, int subType, int placement)
     {
-        this.reactors[i].id = id;
-        this.reactors[i].brightColor = this.color1;
-        this.reactors[i].darkColor = this.color2;
-        this.reactors[i].lightColor = this.lightColor;
+        this.reactors[i].SetGeneticAndCreate(id, this.color1, this.color2, this.lightColor);
         int tempSlot = Mathf.FloorToInt(id / 4);
         this.slots[i] = new Slot((SlotType)tempSlot, this.reactors[i]);
     }
