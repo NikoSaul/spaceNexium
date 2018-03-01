@@ -179,6 +179,8 @@ public class GenerateShip : MonoBehaviour
         initGamePlay(type1, 0, design1, orientationOrSubType1);
         initGamePlay(type2, 1, design2, orientationOrSubType2);
         initGamePlay(type3, 2, design3, orientationOrSubType3);
+
+
     }
 
     // Example - - 
@@ -195,6 +197,8 @@ public class GenerateShip : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        /*if (Input.GetKeyDown("space"))
+            ImageExporter.SaveScreenshotToFile("test.png");*/
 
     }
 
