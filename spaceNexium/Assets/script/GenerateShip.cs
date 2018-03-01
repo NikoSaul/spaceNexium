@@ -43,6 +43,8 @@ public class GenerateShip : MonoBehaviour
 
     private void Awake()
     {
+        // ulong a = 24178516392292583000000000;
+
         colors = new Color[6];
         initColor();
 
@@ -184,7 +186,7 @@ public class GenerateShip : MonoBehaviour
     // Example - - 
     // 00000 11111 00000 11111111 00000000 11111111 00000000 11111 00000 11111 00 11111 00 1 00000 11 0 11111 00 1
     // 0000011111000001111111100000000111111110000000011111000001111100111110010000011011111001
-    // 0001010000000000000000000000000000000000000000000000000000000000000000000000000000000000
+    // 0001010000000000000000000000000000000000000000000000000000000010000000000000000000000000
     // Use this for initialization
     void Start()
     {
@@ -202,28 +204,28 @@ public class GenerateShip : MonoBehaviour
     {
         if (i == 1) // Protection
         {
-            this.ship.SetProtections(id, design, orientationOrSubType, this.placement);
+            this.ship.SetProtections(placement, design, orientationOrSubType);
         }
         else // CANON
         {
             if (id == 0)
-                this.ship.SetCanons(id, design, orientationOrSubType, this.placement);
+                this.ship.SetCanons(id, design, orientationOrSubType);
             else if (id == 1)
             {
                 if (placement == 0)
-                    this.ship.SetCanons(1, design, orientationOrSubType, this.placement);
+                    this.ship.SetCanons(1, design, orientationOrSubType);
                 else if (placement == 1)
-                    this.ship.SetCanons(4, design, orientationOrSubType, this.placement);
+                    this.ship.SetCanons(4, design, orientationOrSubType);
                 else
-                    this.ship.SetCanons(3, design, orientationOrSubType, this.placement);
+                    this.ship.SetCanons(3, design, orientationOrSubType);
             } else
             {
                 if (placement == 0)
-                    this.ship.SetCanons(2, design, orientationOrSubType, this.placement);
+                    this.ship.SetCanons(2, design, orientationOrSubType);
                 else if (placement == 1)
-                    this.ship.SetCanons(5, design, orientationOrSubType, this.placement);
+                    this.ship.SetCanons(5, design, orientationOrSubType);
                 else
-                    this.ship.SetCanons(6, design, orientationOrSubType, this.placement);
+                    this.ship.SetCanons(6, design, orientationOrSubType);
             }
         }
     }
