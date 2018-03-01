@@ -11,7 +11,7 @@ public abstract class PartRenderer : MonoBehaviour
 
     protected int layerOrder;
 
-    public int id = 0;
+    internal int id = 0;
 
     internal Color brightColor = Color.cyan;
 
