@@ -283,7 +283,7 @@ public class NexiumContract
     ]";
     #endregion
     
-    // And we define the contract address here, in this case is a simple ping contract
+    // We define the contract address here
     // (Remember this contract is deployed on the ropsten network)
     private static string contractAddress = "0x5f8514183699e7aa8139ad8740b7f920a33b2e10";
 
@@ -296,36 +296,29 @@ public class NexiumContract
     }
 
     #region Balance Of
-
     public Function Get_balanceOf_Function()
     {
         return contract.GetFunction("balanceOf");
     }
-
     public CallInput Create_balanceOf_Input(string address)
     {
         // For this transaction to the contract we dont need inputs,
-        // its only to retreive the quantity of Ping transactions we did. (the pings variable on the contract)
+        // its only to retreive the quantity of Nexium on the address
         var function = Get_balanceOf_Function();
         return function.CreateCallInput(address);
     }
-
     public BigInteger Decode_balanceOf(string balance)
     {
         var function = Get_balanceOf_Function();
         return function.DecodeSimpleTypeOutput<BigInteger>(balance);
     }
-
     #endregion
 
-
     #region Approve
-
     public Function Get_approve_Function()
     {
         return contract.GetFunction("approve");
     }
-
     public TransactionInput Create_approve_TransactionInput(
     // For this transaction to the contract we are going to use
     // the address which is excecuting the transaction (addressFrom), 
@@ -346,6 +339,5 @@ public class NexiumContract
         var function = Get_approve_Function();
         return function.CreateTransactionInput(addressFrom, gas, gasPrice, valueAmount, spender, value);
     }
-
     #endregion
 }

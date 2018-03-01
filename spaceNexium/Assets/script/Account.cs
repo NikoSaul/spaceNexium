@@ -26,12 +26,13 @@ public class Account : MonoBehaviour
 
     private string accountAddress = "";
     private string keystoreJSON = "";
-    private string accountPrivateKey = "";
 
     private string _url = "https://ropsten.infura.io";
 
     private NexiumContract m_nexiumContract = new NexiumContract();
-        
+    private GeneshipsContract m_geneshipsContract = new GeneshipsContract();
+    private SpaceMMContract m_spaceMMContract = new SpaceMMContract();
+
     private void Start()
     {
         Words[0].text = "mixture";
@@ -142,12 +143,11 @@ public class Account : MonoBehaviour
         }
     }
 
-    IEnumerator GetPrivateKeyFromKeystore(string pass)
+    private string GetPrivateKeyFromKeystore(string pass)
     {
         if (keystoreJSON == null || keystoreJSON == "" || pass == null || pass == "")
         {
-            accountPrivateKey = "";
-            yield break;
+            return "";
         }
 
         byte[] b = m_keystoreService.DecryptKeyStoreFromJson(pass, keystoreJSON);
@@ -155,11 +155,10 @@ public class Account : MonoBehaviour
 
         if (myKey.GetPublicAddress() != accountAddress)
         {
-            accountPrivateKey = "";
-            yield break;
+            return "";
         }
 
-        accountPrivateKey = myKey.GetPrivateKey();
+        return myKey.GetPrivateKey();
     }
 
     #endregion
@@ -189,12 +188,12 @@ public class Account : MonoBehaviour
         }
     }
 
+    #region Nexium Contract Calls
     public void GetNexiumBalance()
     {
         StartCoroutine(NexiumBalance());
     }
-
-    public IEnumerator NexiumBalance()
+    IEnumerator NexiumBalance()
     {
         var nexiumBalanceRequest = new EthCallUnityRequest(_url);
         var nexiumBalanceCallInput = m_nexiumContract.Create_balanceOf_Input(accountAddress);
@@ -215,16 +214,14 @@ public class Account : MonoBehaviour
             throw new InvalidOperationException("Get Nexium balance request failed");
         }
     }
-
     public void NexiumApproveTest()
     {
+        // Address is Metamask faucet
         StartCoroutine(NexiumApprove("0x81b7e08f65bdf5648606c89998a9cc8164397647", 10));
     }
-
-    public IEnumerator NexiumApprove(string spender, BigInteger value)
+    IEnumerator NexiumApprove(string spender, BigInteger value)
     {
-        accountPrivateKey = "";
-        yield return GetPrivateKeyFromKeystore(Password.text);
+        string accountPrivateKey = GetPrivateKeyFromKeystore(Password.text);
         
         if (accountPrivateKey == "")
         {
@@ -236,8 +233,8 @@ public class Account : MonoBehaviour
             accountPrivateKey,
             spender,
             value,
-            new HexBigInteger(50000),
-            new HexBigInteger(25),
+            new HexBigInteger(20000),
+            new HexBigInteger(10),
             new HexBigInteger(0)
         );
 
@@ -247,9 +244,7 @@ public class Account : MonoBehaviour
 
         // Then we send it and wait
         yield return transactionSignedRequest.SignAndSendTransaction(transactionInput);
-
-        accountPrivateKey = "";
-
+        
         if (transactionSignedRequest.Exception == null)
         {
             // If we don't have exceptions we just display the result, congrats!
@@ -261,4 +256,343 @@ public class Account : MonoBehaviour
             Debug.Log("Error submitting Nexium approve: " + transactionSignedRequest.Exception.Message);
         }
     }
+    #endregion
+
+    #region Geneships Contract Calls
+    public void GetShipsList(Action<BigInteger[]> act)
+    {
+        StartCoroutine(ShipsList(act));
+    }
+    IEnumerator ShipsList(Action<BigInteger[]> act)
+    {
+        var shipsListRequest = new EthCallUnityRequest(_url);
+        var shipsListCallInput = m_geneshipsContract.Create_shipsList_Input(accountAddress);
+
+        yield return shipsListRequest.SendRequest(shipsListCallInput, Nethereum.RPC.Eth.DTOs.BlockParameter.CreateLatest());
+
+        // Now we check if the request has an exception
+        if (shipsListRequest.Exception == null)
+        {
+            if (act != null)
+                act(m_geneshipsContract.Decode_shipsList(shipsListRequest.Result));
+        }
+        else
+        {
+            // If there was an error we just throw an exception.
+            throw new InvalidOperationException("Get Ships List request failed");
+        }
+    }
+
+    public void GetShipOwner(BigInteger shipID, Action<string> act)
+    {
+        StartCoroutine(ShipOwner(shipID, act));
+    }
+    IEnumerator ShipOwner(BigInteger shipID, Action<string> act)
+    {
+        var shipOwnerRequest = new EthCallUnityRequest(_url);
+        var shipOwnerCallInput = m_geneshipsContract.Create_shipOwner_Input(shipID);
+
+        yield return shipOwnerRequest.SendRequest(shipOwnerCallInput, Nethereum.RPC.Eth.DTOs.BlockParameter.CreateLatest());
+
+        // Now we check if the request has an exception
+        if (shipOwnerRequest.Exception == null)
+        {
+            if (act != null)
+                act(m_geneshipsContract.Decode_shipOwner(shipOwnerRequest.Result));
+        }
+        else
+        {
+            // If there was an error we just throw an exception.
+            throw new InvalidOperationException("Get Ship Owner request failed");
+        }
+    }
+
+    public void GetShipGenes(BigInteger shipID, Action<BigInteger> act)
+    {
+        StartCoroutine(ShipGenes(shipID, act));
+    }
+    IEnumerator ShipGenes(BigInteger shipID, Action<BigInteger> act)
+    {
+        var shipGenesRequest = new EthCallUnityRequest(_url);
+        var shipGenesCallInput = m_geneshipsContract.Create_shipGenes_Input(shipID);
+
+        yield return shipGenesRequest.SendRequest(shipGenesCallInput, Nethereum.RPC.Eth.DTOs.BlockParameter.CreateLatest());
+
+        // Now we check if the request has an exception
+        if (shipGenesRequest.Exception == null)
+        {
+            if (act != null)
+                act(m_geneshipsContract.Decode_shipGenes(shipGenesRequest.Result));
+        }
+        else
+        {
+            // If there was an error we just throw an exception.
+            throw new InvalidOperationException("Get Ship Genes request failed");
+        }
+    }
+
+    public void GetShipsGenes(BigInteger[] shipsID, Action<BigInteger[]> act)
+    {
+        StartCoroutine(ShipsGenes(shipsID, act));
+    }
+    IEnumerator ShipsGenes(BigInteger[] shipsID, Action<BigInteger[]> act)
+    {
+        var shipsGenesRequest = new EthCallUnityRequest(_url);
+        var shipsGenesCallInput = m_geneshipsContract.Create_shipsGenes_Input(shipsID);
+
+        yield return shipsGenesRequest.SendRequest(shipsGenesCallInput, Nethereum.RPC.Eth.DTOs.BlockParameter.CreateLatest());
+
+        // Now we check if the request has an exception
+        if (shipsGenesRequest.Exception == null)
+        {
+            if (act != null)
+                act(m_geneshipsContract.Decode_shipsGenes(shipsGenesRequest.Result));
+        }
+        else
+        {
+            // If there was an error we just throw an exception.
+            throw new InvalidOperationException("Get Ships Genes request failed");
+        }
+    }
+
+    public void GetShipsStructure(BigInteger[] shipsID, Action<GeneshipsContract.ShipStructure[]> act)
+    {
+        StartCoroutine(ShipsStructure(shipsID, act));
+    }
+    IEnumerator ShipsStructure(BigInteger[] shipsID, Action<GeneshipsContract.ShipStructure[]> act)
+    {
+        var shipsStructureRequest = new EthCallUnityRequest(_url);
+        var shipsStructureCallInput = m_geneshipsContract.Create_shipsStructure_Input(shipsID);
+
+        yield return shipsStructureRequest.SendRequest(shipsStructureCallInput, Nethereum.RPC.Eth.DTOs.BlockParameter.CreateLatest());
+
+        // Now we check if the request has an exception
+        if (shipsStructureRequest.Exception == null)
+        {
+            if (act != null)
+                act(m_geneshipsContract.Decode_shipsStructure(shipsStructureRequest.Result));
+        }
+        else
+        {
+            // If there was an error we just throw an exception.
+            throw new InvalidOperationException("Get Ships Structure request failed");
+        }
+    }
+    #endregion
+    
+    #region Space Match Making Contract Calls
+    public void SendRequestDuel(Action act)
+    {
+        StartCoroutine(RequestDuel(act));
+    }
+    IEnumerator RequestDuel(Action act)
+    {
+        string accountPrivateKey = GetPrivateKeyFromKeystore(Password.text);
+
+        if (accountPrivateKey == "")
+        {
+            yield break;
+        }
+
+        var transactionInput = m_spaceMMContract.Create_requestDuel_TransactionInput(
+            accountAddress,
+            accountPrivateKey,
+            new HexBigInteger(20000),
+            new HexBigInteger(10),
+            new HexBigInteger(0)
+        );
+        
+        var transactionSignedRequest = new TransactionSignedUnityRequest(_url, accountPrivateKey, accountAddress);
+        
+        yield return transactionSignedRequest.SignAndSendTransaction(transactionInput);
+        
+        if (transactionSignedRequest.Exception == null)
+        {
+            if (act != null)
+                act();
+        }
+        else
+        {
+            Debug.Log("Error Request Duel: " + transactionSignedRequest.Exception.Message);
+        }
+    }
+
+    public void SendAnswerDuel(BigInteger duelID, string teamHash, Action act)
+    {
+        StartCoroutine(AnswerDuel(duelID, teamHash, act));
+    }
+    IEnumerator AnswerDuel(BigInteger duelID, string teamHash, Action act)
+    {
+        string accountPrivateKey = GetPrivateKeyFromKeystore(Password.text);
+
+        if (accountPrivateKey == "")
+        {
+            yield break;
+        }
+
+        var transactionInput = m_spaceMMContract.Create_answerDuel_TransactionInput(
+            accountAddress,
+            accountPrivateKey,
+            duelID,
+            teamHash,
+            new HexBigInteger(20000),
+            new HexBigInteger(10),
+            new HexBigInteger(0)
+        );
+
+        var transactionSignedRequest = new TransactionSignedUnityRequest(_url, accountPrivateKey, accountAddress);
+
+        yield return transactionSignedRequest.SignAndSendTransaction(transactionInput);
+        
+        if (transactionSignedRequest.Exception == null)
+        {
+            if (act != null)
+                act();
+        }
+        else
+        {
+            Debug.Log("Error Answer Duel: " + transactionSignedRequest.Exception.Message);
+        }
+    }
+
+    public void SendSetTeamOne(BigInteger duelID, BigInteger[] shipsID, Action act)
+    {
+        StartCoroutine(SetTeamOne(duelID, shipsID, act));
+    }
+    IEnumerator SetTeamOne(BigInteger duelID, BigInteger[] shipsID, Action act)
+    {
+        string accountPrivateKey = GetPrivateKeyFromKeystore(Password.text);
+
+        if (accountPrivateKey == "")
+        {
+            yield break;
+        }
+
+        var transactionInput = m_spaceMMContract.Create_setTeamOne_TransactionInput(
+            accountAddress,
+            accountPrivateKey,
+            duelID,
+            shipsID,
+            new HexBigInteger(20000),
+            new HexBigInteger(10),
+            new HexBigInteger(0)
+        );
+
+        var transactionSignedRequest = new TransactionSignedUnityRequest(_url, accountPrivateKey, accountAddress);
+
+        yield return transactionSignedRequest.SignAndSendTransaction(transactionInput);
+        
+        if (transactionSignedRequest.Exception == null)
+        {
+            if (act != null)
+                act();
+        }
+        else
+        {
+            Debug.Log("Error Set Team One: " + transactionSignedRequest.Exception.Message);
+        }
+    }
+
+    public void SendValidateDuel(BigInteger duelID, BigInteger[] shipsID, string salt, Action act)
+    {
+        StartCoroutine(ValidateDuel(duelID, shipsID, salt, act));
+    }
+    IEnumerator ValidateDuel(BigInteger duelID, BigInteger[] shipsID, string salt, Action act)
+    {
+        string accountPrivateKey = GetPrivateKeyFromKeystore(Password.text);
+
+        if (accountPrivateKey == "")
+        {
+            yield break;
+        }
+
+        var transactionInput = m_spaceMMContract.Create_validateDuel_TransactionInput(
+            accountAddress,
+            accountPrivateKey,
+            duelID,
+            shipsID,
+            salt,
+            new HexBigInteger(20000),
+            new HexBigInteger(10),
+            new HexBigInteger(0)
+        );
+
+        var transactionSignedRequest = new TransactionSignedUnityRequest(_url, accountPrivateKey, accountAddress);
+
+        yield return transactionSignedRequest.SignAndSendTransaction(transactionInput);
+        
+        if (transactionSignedRequest.Exception == null)
+        {
+            if (act != null)
+                act();
+        }
+        else
+        {
+            Debug.Log("Error Validate Duel: " + transactionSignedRequest.Exception.Message);
+        }
+    }
+    
+    public void GetAvailableDuels(Action<BigInteger[]> act)
+    {
+        StartCoroutine(AvailableDuels(act));
+    }
+    IEnumerator AvailableDuels(Action<BigInteger[]> act)
+    {
+        var availableDuelsRequest = new EthCallUnityRequest(_url);
+        var availableDuelsCallInput = m_spaceMMContract.Create_availableDuels_Input();
+
+        yield return availableDuelsRequest.SendRequest(availableDuelsCallInput, Nethereum.RPC.Eth.DTOs.BlockParameter.CreateLatest());
+
+        // Now we check if the request has an exception
+        if (availableDuelsRequest.Exception == null)
+        {
+            if (act != null)
+                act(m_spaceMMContract.Decode_shipsList(availableDuelsRequest.Result));
+        }
+        else
+        {
+            // If there was an error we just throw an exception.
+            throw new InvalidOperationException("Get Duels List request failed");
+        }
+    }
+
+
+    public void SendCancellation(BigInteger duelID, Action act)
+    {
+        StartCoroutine(Cancellation(duelID, act));
+    }
+    IEnumerator Cancellation(BigInteger duelID, Action act)
+    {
+        string accountPrivateKey = GetPrivateKeyFromKeystore(Password.text);
+
+        if (accountPrivateKey == "")
+        {
+            yield break;
+        }
+
+        var transactionInput = m_spaceMMContract.Create_cancellation_TransactionInput(
+            accountAddress,
+            accountPrivateKey,
+            duelID,
+            new HexBigInteger(20000),
+            new HexBigInteger(10),
+            new HexBigInteger(0)
+        );
+
+        var transactionSignedRequest = new TransactionSignedUnityRequest(_url, accountPrivateKey, accountAddress);
+
+        yield return transactionSignedRequest.SignAndSendTransaction(transactionInput);
+        
+        if (transactionSignedRequest.Exception == null)
+        {
+            if (act != null)
+                act();
+        }
+        else
+        {
+            Debug.Log("Error Validate Duel: " + transactionSignedRequest.Exception.Message);
+        }
+    }
+    #endregion
+
 }
