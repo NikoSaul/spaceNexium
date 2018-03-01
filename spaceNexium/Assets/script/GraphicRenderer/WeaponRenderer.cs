@@ -2,20 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WeaponRenderer : PartRenderer {
+public class WeaponRenderer : PartRenderer
+{
 
     [SerializeField]
     private GameObject pieceA1;
 
-    // Use this for initialization
-    void Start () {
+    protected override void CreatePart()
+    {
         type = "w";
         layerOrder = 5;
-        InstantiatePiece(pieceA1.transform,"0");
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+        InstantiatePiece(pieceA1.transform, "0");
+    }
+
 }

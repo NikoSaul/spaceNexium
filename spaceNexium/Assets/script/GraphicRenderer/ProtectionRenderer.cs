@@ -2,15 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ProtectionRenderer : MonoBehaviour {
-
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+public class ProtectionRenderer : PartRenderer
+{
+    protected override void CreatePart()
+    {
+        throw new System.NotImplementedException();
+    }
 }

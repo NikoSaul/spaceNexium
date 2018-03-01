@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-
 public class GenerateShip : MonoBehaviour
 {
+
+    private Color[] colors;
+    
     [SerializeField]
     private string codeGen;
 
@@ -37,36 +39,34 @@ public class GenerateShip : MonoBehaviour
     private int orientationOrSubType3;
     private int type3;
 
-    [SerializeField]
-    private GameObject shipPrefab;
-
     private Ship ship;
 
     private void Awake()
     {
+     
+        colors = new Color[6];
+        initColor();
 
-        this.ship = this.shipPrefab.GetComponent<Ship>();
+        GameObject shipPrefab = (GameObject)Resources.Load("prefabs/ShipPattern");
+        GameObject shipTemp = Instantiate(shipPrefab,this.transform);
+        this.ship = shipTemp.GetComponent<Ship>();
         // - - - - - - - - - - - - - - - - -  Color1 - - - - - - - - - - - - - -
         int lenghtActu = 0; // * * * * Mettre + 24 * * * * (commence à 24)
         int tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 5), 2);
         lenghtActu += 5;
-        color1.r = tempInt * 8;
-        color1.g = tempInt * 8;
-        color1.b = tempInt * 8;
+
+        color1 = colors[tempInt % colors.Length];
 
         // - - - - - - - - - - - - - - - - -  Color2 - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 5), 2);
         lenghtActu += 5;
-        color2.r = tempInt * 8;
-        color2.g = tempInt * 8;
-        color2.b = tempInt * 8;
+
+        color2 = colors[tempInt % colors.Length];
 
         // - - - - - - - - - - - - - - - - - lightColor - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 5), 2);
         lenghtActu += 5;
-        lightColor.r = tempInt * 8;
-        lightColor.g = tempInt * 8;
-        lightColor.b = tempInt * 8;
+        lightColor = colors[tempInt % colors.Length];
 
         this.ship.SetColorGlobal(this.color1, this.color2, this.lightColor);
 
@@ -180,12 +180,14 @@ public class GenerateShip : MonoBehaviour
         initGamePlay(type1, 0, design1, orientationOrSubType1);
         initGamePlay(type2, 1, design2, orientationOrSubType2);
         initGamePlay(type3, 2, design3, orientationOrSubType3);
+
+
     }
 
     // Example - - 
     // 00000 11111 00000 11111111 00000000 11111111 00000000 11111 00000 11111 00 11111 00 1 00000 11 0 11111 00 1
     // 0000011111000001111111100000000111111110000000011111000001111100111110010000011011111001
-    // 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+    // 0001010000000000000000000000000000000000000000000000000000000010000000000000000000000000
     // Use this for initialization
     void Start()
     {
@@ -196,6 +198,8 @@ public class GenerateShip : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        /*if (Input.GetKeyDown("space"))
+            ImageExporter.SaveScreenshotToFile("test.png");*/
 
     }
 
@@ -203,12 +207,40 @@ public class GenerateShip : MonoBehaviour
     {
         if (i == 1) // Protection
         {
-            this.ship.SetProtections(id, design, orientationOrSubType, this.placement);
+            this.ship.SetProtections(placement, design, orientationOrSubType);
         }
         else // CANON
         {
-            this.ship.SetCanons(id, design, orientationOrSubType, this.placement);
+            if (id == 0)
+                this.ship.SetCanons(id, design, orientationOrSubType);
+            else if (id == 1)
+            {
+                if (placement == 0)
+                    this.ship.SetCanons(1, design, orientationOrSubType);
+                else if (placement == 1)
+                    this.ship.SetCanons(4, design, orientationOrSubType);
+                else
+                    this.ship.SetCanons(3, design, orientationOrSubType);
+            } else
+            {
+                if (placement == 0)
+                    this.ship.SetCanons(2, design, orientationOrSubType);
+                else if (placement == 1)
+                    this.ship.SetCanons(5, design, orientationOrSubType);
+                else
+                    this.ship.SetCanons(6, design, orientationOrSubType);
+            }
         }
+    }
+
+    private void initColor()
+    {
+        colors[0] = Color.blue;
+        colors[1] = Color.red;
+        colors[2] = Color.green;
+        colors[3] = Color.magenta;
+        colors[4] = Color.yellow;
+        colors[5] = Color.cyan;
     }
 
 }
