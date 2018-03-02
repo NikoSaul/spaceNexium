@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class PartRenderer : MonoBehaviour
 {
-
+    private List<PieceRenderer> pieces;
     protected GameObject piecePrefab;
 
     protected string type;
@@ -24,6 +24,7 @@ public abstract class PartRenderer : MonoBehaviour
     /// </summary>
     public void SetGeneticAndCreate(int id, Color brightColor, Color darkColor, Color lightColor)
     {
+        this.pieces = new List<PieceRenderer>();
         this.id = id;
         this.brightColor = brightColor;
         this.darkColor = darkColor;
@@ -33,11 +34,22 @@ public abstract class PartRenderer : MonoBehaviour
 
     protected abstract void CreatePart();
 
+    public void DeactivatePart()
+    {
+        foreach(PieceRenderer p in pieces)
+        {
+            p.changeAllLayersColor(Color.gray);
+        }
+    }
+
     protected void InstantiatePiece(Transform parent, string category)
     {
         piecePrefab = (GameObject)Resources.Load("prefabs/piece");
         GameObject piece = Instantiate(piecePrefab, parent);
-        piece.GetComponent<PieceRenderer>().setProperties(type, id, category, brightColor, darkColor, lightColor, layerOrder);
+        PieceRenderer pieceTmp = piece.GetComponent<PieceRenderer>();
+        pieceTmp.setProperties(type, id, category, brightColor, darkColor, lightColor, layerOrder);
+        pieces.Add(pieceTmp);
+
     }
 
 }

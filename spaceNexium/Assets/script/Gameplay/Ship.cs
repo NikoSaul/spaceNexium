@@ -69,8 +69,9 @@ public class Ship : MonoBehaviour
         int tempSlot = Mathf.FloorToInt(id / 4);
         if (tempSlot < 4)
         {
-            SetReactors(i, id, subType);
-        } else
+            SetReactors(i % 3, id, subType);
+        }
+        else
         {
             this.protections[i].SetGeneticAndCreate(id, this.color1, this.color2, this.lightColor);
             this.m_Slots[slotNumber] = new Slot((SlotType)slotNumber, this.protections[i]);
