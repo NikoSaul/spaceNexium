@@ -14,7 +14,7 @@ public class Slot
 {
     public SlotType m_SlotType;
 
-    private PartRenderer sprite;
+    protected PartRenderer sprite;
 
     private static SlotType[] m_aSlotType = (SlotType[])Enum.GetValues(typeof(SlotType));
     private static SlotType[] m_aSlotTypeDoubled = new SlotType[m_aSlotType.Length * 2];
