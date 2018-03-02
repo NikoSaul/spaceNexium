@@ -1,23 +1,30 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 using Nethereum.JsonRpc.UnityClient;
 using Nethereum.Hex.HexTypes;
 using Nethereum.HdWallet;
 using Nethereum.KeyStore;
 using Nethereum.Signer;
+using ETH_Identicons;
 using System;
 using System.Numerics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.InteropServices;
 
 public class Account : MonoBehaviour
 {
+    public static Account instance { get; private set; }
+
     public Text debugInfo;
 
     #region UI Data
+    public GameObject Canvas;
     public InputField[] Words = new InputField[12];
     public InputField Password;
+    private Sprite sp;
     #endregion
     
     private KeyStoreService m_keystoreService = new KeyStoreService();
@@ -33,8 +40,29 @@ public class Account : MonoBehaviour
     private GeneshipsContract m_geneshipsContract = new GeneshipsContract();
     private SpaceMMContract m_spaceMMContract = new SpaceMMContract();
 
+#if UNITY_WEBGL
+
+    public bool ExternalProvider = true;
+    [DllImport("__Internal")]
+    private static extern string GetAccount();
+    [DllImport("__Internal")]
+    private static extern string SendTransaction(string to, string data);
+#else
+    public bool ExternalProvider = false;
+    private static string GetAccount () { return null; }
+    private static string SendTransaction (string to, string data) { return null; }
+#endif
+
+
+    void Awake()
+    {
+        instance = this;
+    }
+
     private void Start()
     {
+        //Loader.instance.StartLoad();
+
         Words[0].text = "mixture";
         Words[1].text = "trumpet";
         Words[2].text = "valley";
@@ -46,29 +74,74 @@ public class Account : MonoBehaviour
         Words[8].text = "almost";
         Words[9].text = "brain";
         Words[10].text = "camera";
-        Words[11].text = "source";        
+        Words[11].text = "source";
 
+
+#if UNITY_WEBGL
+        StartCoroutine(GetExternalAccount());
+#else
         if (LoadJSONFromDisk())
         {
             if (RetrieveAddressFromKeystore())
             {
                 // OK
+                Canvas.SetActive(false);
+                LobbyManager.instance.Activate("Account", CreateBlocky());
             }
             else
             {
-                Debug.Log("Could not retrieve address from existing keystore");
+                Debug.LogError("Could not retrieve public address from existing keystore");
             }
         }
         else
         {
-            Debug.Log("No keystore, need to retrieve wallet");
-        }        
+            // No keystore
+            LobbyManager.instance.Canvas.SetActive(false);
+            Canvas.SetActive(true);
+            Canvas.transform.Find("LinkMethod").gameObject.SetActive(true);
+            Canvas.transform.Find("MnemonicWords").gameObject.SetActive(false);
+        }
+#endif
+
+        //Loader.instance.StopLoad();
     }
 
     #region Wallet & Keystore
-    
+
+    //This will be used to get the account using metamask, we loop to check for account changes on metamask
+    public IEnumerator GetExternalAccount()
+    {
+        if (ExternalProvider)
+        {
+            var wait = 2;
+            while (accountAddress == "")
+            {
+                yield return new WaitForSeconds(wait);
+                wait = 20;
+                var acc = GetAccount();
+                if (acc == "")
+                {
+                    accountAddress = "";
+                }
+                else
+                {
+                    accountAddress = acc;
+                    LobbyManager.instance.Activate(accountAddress, CreateBlocky());
+                }
+            }
+        }
+    }
+
+    public void OpenMnemonic()
+    {
+        Canvas.transform.Find("LinkMethod").gameObject.SetActive(false);
+        Canvas.transform.Find("MnemonicWords").gameObject.SetActive(true);
+    }
+
     public void RetrieveWallet()
     {
+        //Loader.instance.StartLoad();
+
         string wordsChain = Words[0].text + " " + Words[1].text + " " + Words[2].text + " " + Words[3].text + " " + Words[4].text + " " + Words[5].text + " " + Words[6].text + " " + Words[7].text + " " + Words[8].text + " " + Words[9].text + " " + Words[10].text + " " + Words[11].text;
         m_wallet = new Wallet(wordsChain, null);
 
@@ -76,6 +149,11 @@ public class Account : MonoBehaviour
 
         keystoreJSON = m_keystoreService.EncryptAndGenerateDefaultKeyStoreAsJson(Password.text, m_wallet.GetWalletPrivateKeyAsByte(), accountAddress);
         SaveJSONOnDisk();
+
+        Canvas.SetActive(false);
+        LobbyManager.instance.Activate("Account", CreateBlocky());
+
+        //Loader.instance.StopLoad();
     }    
 
     private bool SaveJSONOnDisk()
@@ -141,6 +219,11 @@ public class Account : MonoBehaviour
         {
             File.Delete(Application.persistentDataPath + "/keystore.ks");
         }
+
+        LobbyManager.instance.Canvas.SetActive(false);
+        Canvas.SetActive(true);
+        Canvas.transform.Find("LinkMethod").gameObject.SetActive(true);
+        Canvas.transform.Find("MnemonicWords").gameObject.SetActive(false);
     }
 
     private string GetPrivateKeyFromKeystore(string pass)
@@ -161,7 +244,28 @@ public class Account : MonoBehaviour
         return myKey.GetPrivateKey();
     }
 
-    #endregion
+    private Sprite CreateBlocky(int resolution = 64)
+    {
+        Identicon id = new Identicon(accountAddress, 8);
+        List<Identicon.PixelData> pixels = id.GetIdenticonPixels(resolution);
+
+        Texture2D texture = new Texture2D(resolution, resolution);
+
+        for (int i = 0; i < pixels.Count; ++i)
+        {
+            Color col = new Color(pixels[i].RGB[0] / 255f, pixels[i].RGB[1] / 255f, pixels[i].RGB[2] / 255f);
+            texture.SetPixel(pixels[i].x, resolution - pixels[i].y - 1, col);
+        }
+
+        texture.Apply();
+
+        sp = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+        sp.name = "Blocky";
+
+        return sp;
+    }
+
+#endregion
     
     private IEnumerator getAccountBalance()
     {
@@ -188,7 +292,7 @@ public class Account : MonoBehaviour
         }
     }
 
-    #region Nexium Contract Calls
+#region Nexium Contract Calls
     public void GetNexiumBalance()
     {
         StartCoroutine(NexiumBalance());
@@ -238,27 +342,31 @@ public class Account : MonoBehaviour
             new HexBigInteger(0)
         );
 
-        // Here we create a new signed transaction Unity Request with the url, private key, and the user address we get before
-        // (this will sign the transaction automatically :D )
-        var transactionSignedRequest = new TransactionSignedUnityRequest(_url, accountPrivateKey, accountAddress);
-
-        // Then we send it and wait
-        yield return transactionSignedRequest.SignAndSendTransaction(transactionInput);
-        
-        if (transactionSignedRequest.Exception == null)
+        if (ExternalProvider)
         {
-            // If we don't have exceptions we just display the result, congrats!
-            Debug.Log("Nexium approve submitted: " + transactionSignedRequest.Result);
+            SendTransaction(transactionInput.To, transactionInput.Data);
         }
         else
         {
-            // if we had an error in the UnityRequest we just display the Exception error
-            Debug.Log("Error submitting Nexium approve: " + transactionSignedRequest.Exception.Message);
+            var transactionSignedRequest = new TransactionSignedUnityRequest(_url, accountPrivateKey, accountAddress);
+
+            yield return transactionSignedRequest.SignAndSendTransaction(transactionInput);
+
+            if (transactionSignedRequest.Exception == null)
+            {
+                // If we don't have exceptions we just display the result, congrats!
+                Debug.Log("Nexium approve submitted: " + transactionSignedRequest.Result);
+            }
+            else
+            {
+                // if we had an error in the UnityRequest we just display the Exception error
+                Debug.Log("Error submitting Nexium approve: " + transactionSignedRequest.Exception.Message);
+            }
         }
     }
-    #endregion
+#endregion
 
-    #region Geneships Contract Calls
+#region Geneships Contract Calls
     public void GetShipsList(Action<BigInteger[]> act)
     {
         StartCoroutine(ShipsList(act));
@@ -378,9 +486,9 @@ public class Account : MonoBehaviour
             throw new InvalidOperationException("Get Ships Structure request failed");
         }
     }
-    #endregion
+#endregion
     
-    #region Space Match Making Contract Calls
+#region Space Match Making Contract Calls
     public void SendRequestDuel(Action act)
     {
         StartCoroutine(RequestDuel(act));
@@ -593,6 +701,6 @@ public class Account : MonoBehaviour
             Debug.Log("Error Validate Duel: " + transactionSignedRequest.Exception.Message);
         }
     }
-    #endregion
+#endregion
 
 }
