@@ -4,7 +4,9 @@ using UnityEngine;
 
 public abstract class PartRenderer : MonoBehaviour
 {
+
     private List<PieceRenderer> pieces;
+
     protected GameObject piecePrefab;
 
     protected string type;
@@ -52,4 +54,19 @@ public abstract class PartRenderer : MonoBehaviour
 
     }
 
+    public void RotateSprite(Orientation p_Orientation)
+    {
+        switch(p_Orientation)
+        {
+            case Orientation.left:
+                transform.localRotation = Quaternion.Euler(0, 0, -45);
+                break;
+            case Orientation.middle:
+                transform.localRotation = Quaternion.Euler(0, 0, 0);
+                break;
+            case Orientation.right:
+                transform.localRotation = Quaternion.Euler(0, 0, 45);
+                break;
+        }
+    }
 }

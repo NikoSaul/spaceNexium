@@ -7,102 +7,7 @@ using System.Linq;
 public class BattleManager : MonoBehaviour
 {
 	public static BattleManager instance { get; private set; }
-
-    private class BattleShip
-    {
-        public Ship m_Ship;
-
-        /// <summary>
-        /// Le vaisseau est-il encore capable de combattre
-        /// </summary>
-        public bool m_b_IsActive = true;
-
-        /// <summary>
-        /// Le vaisseau est-il réduit en épave
-        /// </summary>
-        public bool m_b_IsDestroyed = false;
-        
-        /// <summary>
-        /// La liste des défenses du vaisseau
-        /// </summary>
-        public List<Defense> m_List_Defenses = new List<Defense>();
-
-        /// <summary>
-        /// La liste des armes du vaisseau
-        /// </summary>
-        public List<Weapon> m_List_Weapons = new List<Weapon>();
-
-        public BattleShip(Ship p_Ship)
-        {
-            m_Ship = p_Ship;
-        }
-
-        public string GetStatus()
-        {
-            return string.Format("({0}/{1})", m_b_IsActive, m_b_IsDestroyed);
-        }
-
-        public void ReceiveDamage(Weapon p_Weapon_Source)
-        {
-            if(m_List_Defenses.Count == 0)
-            {
-                m_b_IsDestroyed = true;
-                m_b_IsActive = false;
-                return;
-            }
-
-            //On split la liste de défenses en 3 catégories, des plus efficaces aux moins efficaces
-            List<SlotType> l_List_MostEffectiveTypes = Slot.GetMostEffective(p_Weapon_Source.m_SlotType);
-            List<Defense> l_List_BestDefenses = m_List_Defenses.FindAll(l_Def => l_List_MostEffectiveTypes.Contains(l_Def.m_SlotType));
-            Defense l_EquivalentDefense = m_List_Defenses.FirstOrDefault(l_Def => l_Def.m_SlotType == p_Weapon_Source.m_SlotType);
-            List<Defense> l_List_WorstDefenses = m_List_Defenses.FindAll(l_Def => l_Def.m_SlotType != p_Weapon_Source.m_SlotType && !l_List_MostEffectiveTypes.Contains(l_Def.m_SlotType));
-
-            //On commence par l'absorption des dégâts par les défenses actives
-            int l_i_DamagePower = 3;
-            for(int l_i_Index = 0 ; l_i_Index < l_List_BestDefenses.Count ; ++l_i_Index)
-            {
-                l_i_DamagePower = l_List_BestDefenses[l_i_Index].DefenseAbsorbDamage(l_i_DamagePower, Defense.DefenseResistance.Effective);
-            }
-            if(l_EquivalentDefense != null)
-            {
-                l_i_DamagePower = l_EquivalentDefense.DefenseAbsorbDamage(l_i_DamagePower, Defense.DefenseResistance.Neutral);
-            }
-            for(int l_i_Index = 0 ; l_i_Index < l_List_WorstDefenses.Count ; ++l_i_Index)
-            {
-                l_i_DamagePower = l_List_WorstDefenses[l_i_Index].DefenseAbsorbDamage(l_i_DamagePower, Defense.DefenseResistance.NonEffective);
-            }
-
-
-            if(l_i_DamagePower > 0)
-            //Il reste des points de dégâts
-            {
-                //On détruit les modules un par un en réduisant les dégâts restant au fur et à mesure
-                for(int l_i_Index = 0 ; l_i_Index < l_List_BestDefenses.Count ; ++l_i_Index)
-                {
-                    l_i_DamagePower = l_List_BestDefenses[l_i_Index].TryDestroyModule(l_i_DamagePower);
-                }
-                if(l_EquivalentDefense != null)
-                {
-                    l_i_DamagePower = l_EquivalentDefense.TryDestroyModule(l_i_DamagePower);
-                }
-                for(int l_i_Index = 0 ; l_i_Index < l_List_WorstDefenses.Count ; ++l_i_Index)
-                {
-                    l_i_DamagePower = l_List_WorstDefenses[l_i_Index].TryDestroyModule(l_i_DamagePower);
-                }
-
-                if(l_i_DamagePower > 0)
-                //Il reste encore des points de dégâts
-                {
-                    //On désactive ou détruit le vaisseau
-                    if(m_b_IsActive)
-                        m_b_IsActive = false;
-                    else
-                        m_b_IsDestroyed = true;
-                }
-            }
-        }
-    }
-
+    
     private BattleShip[] m_LeftPlayerFleet = new BattleShip[3];
     private BattleShip[] m_RightPlayerFleet = new BattleShip[3];
 
@@ -401,7 +306,7 @@ public class BattleManager : MonoBehaviour
             #endregion
             #region ActionsJoueurDroit
             for(int l_i_Index = 0 ; l_i_Index < m_RightPlayerFleet.Length ; ++l_i_Index)
-            //Gestion des tirs de chaque vaisseaux actifs du joueur GAUCHE
+            //Gestion des tirs de chaque vaisseaux actifs du joueur DROITE
             {
                 if(m_RightPlayerFleet[l_i_Index].m_b_IsActive)
                 //Le vaisseau est actif et peut potentiellement tirer

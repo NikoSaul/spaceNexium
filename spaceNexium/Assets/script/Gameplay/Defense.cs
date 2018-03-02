@@ -4,8 +4,19 @@ using UnityEngine;
 
 public class Defense : Slot
 {
-    private bool m_b_IsDefenseUp = true;
-    private bool m_b_IsDestroyed = false;
+    private bool isDefenseUp = true;
+    /// <summary>
+    /// L'état de la défense : si active, la prochaine attaque sera absorbée en fonction de l'efficacité de la défense.
+    /// Si non active, le module absorbera un point de dégât et sera détruit.
+    /// </summary>
+    private bool m_b_IsDefenseUp { get { return isDefenseUp; } set { isDefenseUp = value; UpdateSprite(); } }
+
+    private bool isDestroyed = false;
+    /// <summary>
+    /// L'état du module, si détruit il n'est plus utilisable, sinon il peut de lui même absorber 1 point de dégât
+    /// </summary>
+    private bool m_b_IsDestroyed { get { return isDestroyed; } set { isDestroyed = value; UpdateSprite(); } }
+
     private bool m_b_RecentlyDown = false;
 
     public Defense(SlotType type, PartRenderer sprite): base(type, sprite)
@@ -17,6 +28,14 @@ public class Defense : Slot
         NonEffective = 1,
         Neutral,
         Effective,
+    }
+
+    /// <summary>
+    /// Met à jour le sprite de la défense pour refléter son nouvel état (Defense active / Module détruit)
+    /// </summary>
+    private void UpdateSprite()
+    {
+        Debug.Log("TODO: UpdateSprite Defense");
     }
 
     /// <summary>
