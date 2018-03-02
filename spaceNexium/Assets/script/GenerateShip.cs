@@ -41,9 +41,31 @@ public class GenerateShip : MonoBehaviour
 
     private Ship ship;
 
-    private void Awake()
+    private bool m_b_IsInit = false;
+
+    public void SetCodeGen(string p_s_CodeGen)
     {
-     
+        codeGen = p_s_CodeGen;
+        Generate();
+    }
+
+    public Ship GetShip()
+    {
+        return ship;
+    }
+
+    private void Start()
+    {
+        Generate();
+    }
+
+    private void Generate()
+    {
+        if(m_b_IsInit)
+            return;
+
+        m_b_IsInit = true;
+
         colors = new Color[6];
         initColor();
 
@@ -187,14 +209,13 @@ public class GenerateShip : MonoBehaviour
     // Example - - 
     // 00000 11111 00000 11111111 00000000 11111111 00000000 11111 00000 11111 00 11111 00 1 00000 11 0 11111 00 1
     // 0000011111000001111111100000000111111110000000011111000001111100111110010000011011111001
+
+    // trois canons
     // 0001010000000000000000000000000000000000000000000000000000000010000000000000000000000000
-    // Use this for initialization
-    void Start()
-    {
 
-
-    }
-
+    // deux canons et un reacteur
+    // 0001000001000000000000000000000000000000000000000000000000000011000000000000000000000001 
+    
     // Update is called once per frame
     void Update()
     {
@@ -233,11 +254,12 @@ public class GenerateShip : MonoBehaviour
         }
     }
 
+    // 
     private void initColor()
     {
-        colors[0] = Color.blue;
-        colors[1] = Color.red;
-        colors[2] = Color.green;
+        colors[0] = new Color(67,217,207); //Un peu bleu
+        colors[1] = new Color(51, 35, 76); //Aubergine
+        colors[2] = new Color(223, 55, 97); //Soupe a mami
         colors[3] = Color.magenta;
         colors[4] = Color.yellow;
         colors[5] = Color.cyan;

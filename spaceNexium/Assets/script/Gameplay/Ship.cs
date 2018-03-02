@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ship : MonoBehaviour {
-
-    private Slot[] slots = new Slot[3];
+public class Ship : MonoBehaviour
+{
+    /// <summary>
+    /// Les 3 slots de module du vaisseau (arme ou défense)
+    /// </summary>
+    public Slot[] m_Slots = new Slot[3];
 
     [SerializeField]
     private PartRenderer[] cockpits;
@@ -29,16 +32,6 @@ public class Ship : MonoBehaviour {
     private Color color2;
     private Color lightColor;
     private int slotNumber = 0;
-
-    // Use this for initialization
-    void Start () {
-
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
     public void SetColorGlobal(Color color1, Color color2, Color lightColor)
     {
@@ -67,7 +60,7 @@ public class Ship : MonoBehaviour {
     public void SetCanons(int i, int id, int orientation)
     {
         this.canons[i].SetGeneticAndCreate(id, this.color1, this.color2, this.lightColor);
-        this.slots[slotNumber] = new Slot((SlotType)slotNumber, this.canons[i]);
+        this.m_Slots[slotNumber] = new Weapon((SlotType)slotNumber, this.canons[i], (Orientation)orientation, (Orientation)slotNumber);
         slotNumber++;
     }
 
@@ -76,11 +69,12 @@ public class Ship : MonoBehaviour {
         int tempSlot = Mathf.FloorToInt(id / 4);
         if (tempSlot < 4)
         {
-            SetReactors(i, id, subType);
-        } else
+            SetReactors(i % 3, id, subType);
+        }
+        else
         {
             this.protections[i].SetGeneticAndCreate(id, this.color1, this.color2, this.lightColor);
-            this.slots[slotNumber] = new Slot((SlotType)slotNumber, this.protections[i]);
+            this.m_Slots[slotNumber] = new Defense((SlotType)slotNumber, this.protections[i]);
             slotNumber++;
         }
     }
@@ -90,7 +84,7 @@ public class Ship : MonoBehaviour {
     {
         this.reactors[i].SetGeneticAndCreate(id, this.color1, this.color2, this.lightColor);
         int tempSlot = Mathf.FloorToInt(id / 4);
-        this.slots[slotNumber] = new Slot((SlotType)slotNumber, this.reactors[i]);
+        this.m_Slots[slotNumber] = new Defense((SlotType)slotNumber, this.reactors[i]);
         slotNumber++;
     }
 

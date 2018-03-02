@@ -5,33 +5,39 @@ using UnityEngine;
 public enum Orientation
 {
     left,
-    midlle,
+    middle,
     right
 }
 
-
 public class Weapon : Slot
 {
-
     private Orientation direction;
-    private Orientation position;
 
-    public Weapon(SlotType type,PartRenderer sprite, Orientation direction, Orientation position) : base(type,sprite)
+    /// <summary>
+    /// La direction où pointe l'arme
+    /// </summary>
+    public Orientation m_Direction { get { return direction; } set { direction = value; UpdateDirection(); } }
+
+    /// <summary>
+    /// La position de l'arme sur le vaisseau
+    /// </summary>
+    public Orientation m_Position;
+    
+    public Weapon(SlotType type,PartRenderer sprite, Orientation direction, Orientation position) : base(type, sprite)
     {
-        this.direction = direction;
-        this.position = position;
+        this.m_Direction = direction;
+        this.m_Position = position;
     }
 
-
-    // Use this for initialization
-    void Start()
+    private void UpdateDirection()
     {
-
+        sprite.RotateSprite(direction);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Fire(Ship p_Ship_Target)
     {
-
+        Debug.Log("Piou");
+        //TODO éventuellement déclencher une animation en destination du slot target
+        //Je pense qu'il faut balancer une coroutine pour animer un projectile partant de ce canon vers une position aléatoire du vaisseau adverse
     }
 }

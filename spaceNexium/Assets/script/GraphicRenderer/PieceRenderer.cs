@@ -49,10 +49,13 @@ public class PieceRenderer : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    internal void changeAllLayersColor(Color color)
     {
-
+        lineLayer.color = color;
+        brightLayer.color = color;
+        darkLayer.color = color;
+        lightLayer.color = color;
+        pipeLayer.color = color;
     }
 
     internal void setProperties(string type, int id, string category, Color bright, Color dark, Color light, int layerPosition)
@@ -65,10 +68,10 @@ public class PieceRenderer : MonoBehaviour
         darkLayer.color = dark;
         lightLayer.color = light;
 
-        lineLayer.sortingOrder += 5 * layerPosition;
-        brightLayer.sortingOrder += 5 * layerPosition;
-        darkLayer.sortingOrder += 5 * layerPosition;
-        lightLayer.sortingOrder += 5 * layerPosition;
-        pipeLayer.sortingOrder += 5 * layerPosition;
+        lineLayer.sortingOrder += 15 * layerPosition;
+        brightLayer.sortingOrder += 15 * layerPosition;
+        darkLayer.sortingOrder += 15 * layerPosition;
+        lightLayer.sortingOrder += 15 * layerPosition;
+        pipeLayer.sortingOrder += 15 * layerPosition;
     }
 }
