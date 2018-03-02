@@ -41,7 +41,9 @@ public class BattleManager : MonoBehaviour
                     m_LeftPlayerFleet[l_i_Index].m_List_Defenses.Add(l_Ship.m_Slots[l_i_IndexSlots] as Defense);
                 }
             }
-            
+
+            Debug.Log(m_LeftPlayerFleet[l_i_Index].GetDetails());
+
             //Right player
             l_Ship = p_RightPlayerFleet[l_i_Index];
             m_RightPlayerFleet[l_i_Index] = new BattleShip(l_Ship);
@@ -57,6 +59,8 @@ public class BattleManager : MonoBehaviour
                     m_RightPlayerFleet[l_i_Index].m_List_Defenses.Add(l_Ship.m_Slots[l_i_IndexSlots] as Defense);
                 }
             }
+
+            Debug.Log(m_RightPlayerFleet[l_i_Index].GetDetails());
         }
         
         //Start the battle

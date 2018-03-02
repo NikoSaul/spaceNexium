@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 public class BattleShip
 {
@@ -51,6 +52,28 @@ public class BattleShip
     public string GetStatus()
     {
         return string.Format("({0}/{1})", m_b_IsActive, m_b_IsDestroyed);
+    }
+
+    public string GetDetails()
+    {
+        StringBuilder l_SB = new StringBuilder("Active: ").AppendLine(m_b_IsActive.ToString())
+            .Append("Destroyed: ").AppendLine(m_b_IsDestroyed.ToString())
+            .AppendLine("** Weapons **");
+        for(int l_i_Index = 0 ; l_i_Index < m_List_Weapons.Count ; ++l_i_Index)
+        {
+            l_SB.Append("Type: ").AppendLine(m_List_Weapons[l_i_Index].m_SlotType.ToString())
+            .Append("Direction: ").AppendLine(m_List_Weapons[l_i_Index].m_Direction.ToString())
+            .Append("Position: ").AppendLine(m_List_Weapons[l_i_Index].m_Position.ToString());
+        }
+
+        l_SB.AppendLine("** Defenses **");
+        Debug.Log(m_List_Defenses.Count);
+        for(int l_i_Index = 0 ; l_i_Index < m_List_Defenses.Count ; ++l_i_Index)
+        {
+            l_SB.Append("Type: ").AppendLine(m_List_Defenses[l_i_Index].m_SlotType.ToString());
+        }
+
+        return l_SB.ToString();
     }
 
     /// <summary>

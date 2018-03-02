@@ -41,9 +41,31 @@ public class GenerateShip : MonoBehaviour
 
     private Ship ship;
 
-    private void Awake()
+    private bool m_b_IsInit = false;
+
+    public void SetCodeGen(string p_s_CodeGen)
     {
-     
+        codeGen = p_s_CodeGen;
+        Generate();
+    }
+
+    public Ship GetShip()
+    {
+        return ship;
+    }
+
+    private void Start()
+    {
+        Generate();
+    }
+
+    private void Generate()
+    {
+        if(m_b_IsInit)
+            return;
+
+        m_b_IsInit = true;
+
         colors = new Color[6];
         initColor();
 
@@ -193,14 +215,7 @@ public class GenerateShip : MonoBehaviour
 
     // deux canons et un reacteur
     // 0001000001000000000000000000000000000000000000000000000000000011000000000000000000000001 
-
-    // Use this for initialization
-    void Start()
-    {
-
-
-    }
-
+    
     // Update is called once per frame
     void Update()
     {
