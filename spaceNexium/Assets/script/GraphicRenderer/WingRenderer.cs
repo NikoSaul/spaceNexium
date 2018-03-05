@@ -21,7 +21,19 @@ public class WingRenderer : PartRenderer
         type = "wi";
         layerOrder = 0;
 
-        if(pieceA1 != null)
+
+        float depthColorCoef = 1.3f;
+
+        brightColor /= depthColorCoef;
+        darkColor /= depthColorCoef;
+        lightColor /= depthColorCoef;
+
+        brightColor.a = 1;
+        darkColor.a = 1;
+        lightColor.a = 1;
+
+
+        if (pieceA1 != null)
         {
             InstantiatePiece(pieceA1.transform, "1");
         }

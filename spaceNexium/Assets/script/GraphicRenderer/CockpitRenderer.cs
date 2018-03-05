@@ -19,6 +19,16 @@ public class CockpitRenderer : PartRenderer
         type = "c";
         layerOrder = 2;
 
+        float depthColorCoef = 1.15f;
+
+        brightColor /= depthColorCoef;
+        darkColor /= depthColorCoef;
+        lightColor /= depthColorCoef;
+
+        brightColor.a = 1;
+        darkColor.a = 1;
+        lightColor.a = 1;
+
         InstantiatePiece(pieceA1.transform, "1");
         InstantiatePiece(pieceA2.transform, "0");
         InstantiatePiece(pieceA3.transform, "1");

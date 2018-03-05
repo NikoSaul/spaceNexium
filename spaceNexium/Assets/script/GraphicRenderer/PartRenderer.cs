@@ -15,11 +15,11 @@ public abstract class PartRenderer : MonoBehaviour
 
     internal int id = 0;
 
-    internal Color brightColor = Color.cyan;
+    internal Color brightColor;
 
-    internal Color darkColor = Color.blue;
+    internal Color darkColor;
 
-    internal Color lightColor = Color.white;
+    internal Color lightColor;
 
     /// <summary>
     /// Set the genetic information and create the part
@@ -28,7 +28,9 @@ public abstract class PartRenderer : MonoBehaviour
     {
         this.pieces = new List<PieceRenderer>();
         this.id = id;
+
         this.brightColor = brightColor;
+
         this.darkColor = darkColor;
         this.lightColor = lightColor;
         CreatePart();
@@ -38,7 +40,7 @@ public abstract class PartRenderer : MonoBehaviour
 
     public void DeactivatePart()
     {
-        foreach(PieceRenderer p in pieces)
+        foreach (PieceRenderer p in pieces)
         {
             p.changeAllLayersColor(Color.gray);
         }
@@ -56,7 +58,7 @@ public abstract class PartRenderer : MonoBehaviour
 
     public void RotateSprite(Orientation p_Orientation)
     {
-        switch(p_Orientation)
+        switch (p_Orientation)
         {
             case Orientation.left:
                 transform.localRotation = Quaternion.Euler(0, 0, -45);

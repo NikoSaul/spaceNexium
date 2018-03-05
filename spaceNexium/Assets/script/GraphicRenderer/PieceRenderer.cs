@@ -30,6 +30,7 @@ public class PieceRenderer : MonoBehaviour
         Texture2D lineTex = (Texture2D)Resources.Load("sprites/" + type + "/" + id + "/" + category + "/" + type + "_" + id + "_" + category);
         lineLayer.sprite = Sprite.Create(lineTex, new Rect(0, 0, lineTex.width, lineTex.height), new Vector2(0, 0));
 
+
         Texture2D brightTex = (Texture2D)Resources.Load("sprites/" + type + "/" + id + "/" + category + "/" + type + "_" + id + "_" + category + "_b");
         brightLayer.sprite = Sprite.Create(brightTex, new Rect(0, 0, lineTex.width, lineTex.height), new Vector2(0, 0));
 
@@ -63,6 +64,7 @@ public class PieceRenderer : MonoBehaviour
         this.id = id;
         this.type = type;
         this.category = category;
+
 
         brightLayer.color = bright;
         darkLayer.color = dark;

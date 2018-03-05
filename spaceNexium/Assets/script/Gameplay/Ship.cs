@@ -67,7 +67,7 @@ public class Ship : MonoBehaviour
     public void SetProtections(int i, int id, int subType)
     {
         int tempSlot = Mathf.FloorToInt(id / 4);
-        if (tempSlot < 4)
+        if (subType == 0)
         {
             SetReactors(i % 3, id, subType);
         }

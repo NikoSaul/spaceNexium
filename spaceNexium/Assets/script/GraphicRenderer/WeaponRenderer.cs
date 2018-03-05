@@ -12,6 +12,8 @@ public class WeaponRenderer : PartRenderer
     {
         type = "w";
         layerOrder = 5;
+  
+
         InstantiatePiece(pieceA1.transform, "0");
     }
 

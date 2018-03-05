@@ -4,8 +4,14 @@ using UnityEngine;
 
 public class ProtectionRenderer : PartRenderer
 {
+    [SerializeField]
+    private GameObject pieceA1;
+
     protected override void CreatePart()
     {
-        throw new System.NotImplementedException();
+        type = "p";
+        layerOrder = 4;
+
+        InstantiatePiece(pieceA1.transform, "0");
     }
 }

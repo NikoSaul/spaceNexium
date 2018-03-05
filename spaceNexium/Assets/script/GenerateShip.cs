@@ -7,13 +7,15 @@ using UnityEngine;
 public class GenerateShip : MonoBehaviour
 {
 
-    private Color[] colors;
-    
+    private Color[] brightColorsList;
+    private Color[] darkColorsList;
+    private Color[] lightColorsList;
+
     [SerializeField]
     private string codeGen;
 
-    private Color color1;
-    private Color color2;
+    private Color brightColor;
+    private Color darkColor;
     private Color lightColor;
 
     private int cockpit;
@@ -43,32 +45,32 @@ public class GenerateShip : MonoBehaviour
 
     private void Awake()
     {
-     
-        colors = new Color[6];
+
+
         initColor();
 
         GameObject shipPrefab = (GameObject)Resources.Load("prefabs/ShipPattern");
-        GameObject shipTemp = Instantiate(shipPrefab,this.transform);
+        GameObject shipTemp = Instantiate(shipPrefab, this.transform);
         this.ship = shipTemp.GetComponent<Ship>();
         // - - - - - - - - - - - - - - - - -  Color1 - - - - - - - - - - - - - -
         int lenghtActu = 0; // * * * * Mettre + 24 * * * * (commence à 24)
         int tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 5), 2);
         lenghtActu += 5;
 
-        color1 = colors[tempInt % colors.Length];
+        brightColor = brightColorsList[tempInt % brightColorsList.Length];
 
         // - - - - - - - - - - - - - - - - -  Color2 - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 5), 2);
         lenghtActu += 5;
 
-        color2 = colors[tempInt % colors.Length];
+        darkColor = darkColorsList[tempInt % darkColorsList.Length];
 
         // - - - - - - - - - - - - - - - - - lightColor - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 5), 2);
         lenghtActu += 5;
-        lightColor = colors[tempInt % colors.Length];
+        lightColor = lightColorsList[tempInt % lightColorsList.Length];
 
-        this.ship.SetColorGlobal(this.color1, this.color2, this.lightColor);
+        this.ship.SetColorGlobal(this.brightColor, this.darkColor, this.lightColor);
 
         // - - - - - - - - - - - - - - - - -  Cockpit - - - - - - - - - - - - - -
         tempInt = Convert.ToInt32(codeGen.Substring(lenghtActu, 8), 2);
@@ -194,6 +196,9 @@ public class GenerateShip : MonoBehaviour
     // deux canons et un reacteur
     // 0001000001000000000000000000000000000000000000000000000000000011000000000000000000000001 
 
+    // protection 8
+    // 0001010000000000000000000000000000000000000000000000000000000010000000000000000010000011
+
     // Use this for initialization
     void Start()
     {
@@ -227,7 +232,8 @@ public class GenerateShip : MonoBehaviour
                     this.ship.SetCanons(4, design, orientationOrSubType);
                 else
                     this.ship.SetCanons(3, design, orientationOrSubType);
-            } else
+            }
+            else
             {
                 if (placement == 0)
                     this.ship.SetCanons(2, design, orientationOrSubType);
@@ -242,12 +248,56 @@ public class GenerateShip : MonoBehaviour
     // 
     private void initColor()
     {
-        colors[0] = new Color(67,217,207); //Un peu bleu
-        colors[1] = new Color(51, 35, 76); //Aubergine
-        colors[2] = new Color(223, 55, 97); //Soupe a mami
-        colors[3] = Color.magenta;
-        colors[4] = Color.yellow;
-        colors[5] = Color.cyan;
+        brightColorsList = new Color[10];
+
+        //Common colors
+        brightColorsList[0] = new Color(109f / 255f, 109f / 255f, 107f / 255f);
+        brightColorsList[1] = new Color(255f / 255f, 176f / 255f, 117f / 255f);
+        brightColorsList[2] = new Color(242f / 255f, 225f / 255f, 119f / 255f);
+        brightColorsList[3] = new Color(119f / 255f, 242f / 255f, 179f / 255f);
+        brightColorsList[4] = new Color(119f / 255f, 162f / 255f, 241f / 255f);
+        brightColorsList[5] = new Color(241f / 255f, 118f / 255f, 162f / 255f);
+
+        //Rare colors
+        brightColorsList[6] = new Color(209f / 255f, 241f / 255f, 118f / 255f);
+        brightColorsList[7] = new Color(116f / 255f, 229f / 255f, 237f / 255f);
+        brightColorsList[8] = new Color(226f / 255f, 222f / 255f, 193f / 255f);
+        brightColorsList[9] = new Color(254f / 255f, 102f / 255f, 81f / 255f);
+
+
+        darkColorsList = new Color[10];
+
+        //Common colors
+        darkColorsList[0] = new Color(107f / 255f, 37f / 255f, 29f / 255f);
+        darkColorsList[1] = new Color(33f / 255f, 40f / 255f, 46f / 255f);
+        darkColorsList[2] = new Color(255f / 255f, 145f / 255f, 60f / 255f);
+        darkColorsList[3] = new Color(111f / 255f, 95f / 255f, 95f / 255f);
+        darkColorsList[4] = new Color(37f / 255f, 119f / 255f, 81f / 255f);
+        darkColorsList[5] = new Color(72f / 255f, 97f / 255f, 239f / 255f);
+
+        //Rare colors
+        darkColorsList[6] = new Color(239f / 255f, 57f / 255f, 35f / 255f);
+        darkColorsList[7] = new Color(255f / 255f, 60f / 255f, 209f / 255f);
+        darkColorsList[8] = new Color(255f / 255f, 214f / 255f, 34f / 255f);
+        darkColorsList[9] = new Color(255f / 255f, 255f / 255f, 255f / 255f);
+
+
+        lightColorsList = new Color[10];
+
+        //Common colors
+        lightColorsList[0] = new Color(251f / 255f, 255f / 255f, 179f / 255f);
+        lightColorsList[1] = new Color(223f / 255f, 255f / 255f, 213f / 255f);
+        lightColorsList[2] = new Color(183f / 255f, 255f / 255f, 211f / 255f);
+        lightColorsList[3] = new Color(182f / 255f, 193f / 255f, 255f / 255f);
+        lightColorsList[4] = new Color(255f / 255f, 221f / 255f, 183f / 255f);
+        lightColorsList[5] = new Color(255f / 255f, 183f / 255f, 243f / 255f);
+
+        //Rare colors
+        lightColorsList[6] = new Color(255f / 255f, 181f / 255f, 182f / 255f);
+        lightColorsList[7] = new Color(255f / 255f, 0f / 255f, 34f / 255f);
+        lightColorsList[8] = new Color(255f / 255f, 243f / 255f, 0f / 255f);
+        lightColorsList[9] = new Color(0f / 255f, 251f / 255f, 254f / 255f);
+
     }
 
 }

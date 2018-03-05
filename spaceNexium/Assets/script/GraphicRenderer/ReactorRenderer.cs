@@ -15,6 +15,17 @@ public class ReactorRenderer : PartRenderer
     {
         type = "r";
         layerOrder = 3;
+
+        float depthColorCoef = 1.35f;
+
+        brightColor /= depthColorCoef;
+        darkColor /= depthColorCoef;
+        lightColor /= depthColorCoef;
+
+        brightColor.a = 1;
+        darkColor.a = 1;
+        lightColor.a = 1;
+
         InstantiatePiece(pieceA1.transform, "0");
         InstantiatePiece(pieceA2.transform, "0");
     }
