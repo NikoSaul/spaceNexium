@@ -1,25 +1,32 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 using Nethereum.JsonRpc.UnityClient;
 using Nethereum.Hex.HexTypes;
 using Nethereum.HdWallet;
 using Nethereum.KeyStore;
 using Nethereum.Signer;
+using ETH_Identicons;
 using System;
 using System.Numerics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.InteropServices;
 
 public class Account : MonoBehaviour
 {
+    public static Account instance { get; private set; }
+
     public Text debugInfo;
 
     #region UI Data
+    public GameObject Canvas;
     public InputField[] Words = new InputField[12];
     public InputField Password;
+    private Sprite sp;
     #endregion
-    
+
     private KeyStoreService m_keystoreService = new KeyStoreService();
 
     private Wallet m_wallet = null;
@@ -33,8 +40,25 @@ public class Account : MonoBehaviour
     private GeneshipsContract m_geneshipsContract = new GeneshipsContract();
     private SpaceMMContract m_spaceMMContract = new SpaceMMContract();
 
+#if UNITY_WEBGL
+    [DllImport("__Internal")]
+    private static extern void SyncFiles();
+#endif
+
+    private static string GetAccount() { return null; }
+    private static string SendTransaction(string to, string data) { return null; }
+
+
+
+    void Awake()
+    {
+        instance = this;
+    }
+
     private void Start()
     {
+        //Loader.instance.StartLoad();
+
         Words[0].text = "mixture";
         Words[1].text = "trumpet";
         Words[2].text = "valley";
@@ -46,29 +70,45 @@ public class Account : MonoBehaviour
         Words[8].text = "almost";
         Words[9].text = "brain";
         Words[10].text = "camera";
-        Words[11].text = "source";        
+        Words[11].text = "source";
 
         if (LoadJSONFromDisk())
         {
             if (RetrieveAddressFromKeystore())
             {
                 // OK
+                Canvas.SetActive(false);
+                LobbyManager.instance.Activate("Account", CreateBlocky());
             }
             else
             {
-                Debug.Log("Could not retrieve address from existing keystore");
+                Debug.LogError("Could not retrieve public address from existing keystore");
             }
         }
         else
         {
-            Debug.Log("No keystore, need to retrieve wallet");
-        }        
+            // No keystore
+            LobbyManager.instance.Canvas.SetActive(false);
+            Canvas.SetActive(true);
+            Canvas.transform.Find("LinkMethod").gameObject.SetActive(true);
+            Canvas.transform.Find("MnemonicWords").gameObject.SetActive(false);
+        }
+
+        //Loader.instance.StopLoad();
     }
 
     #region Wallet & Keystore
-    
+
+    public void OpenMnemonic()
+    {
+        Canvas.transform.Find("LinkMethod").gameObject.SetActive(false);
+        Canvas.transform.Find("MnemonicWords").gameObject.SetActive(true);
+    }
+
     public void RetrieveWallet()
     {
+        //Loader.instance.StartLoad();
+
         string wordsChain = Words[0].text + " " + Words[1].text + " " + Words[2].text + " " + Words[3].text + " " + Words[4].text + " " + Words[5].text + " " + Words[6].text + " " + Words[7].text + " " + Words[8].text + " " + Words[9].text + " " + Words[10].text + " " + Words[11].text;
         m_wallet = new Wallet(wordsChain, null);
 
@@ -76,7 +116,12 @@ public class Account : MonoBehaviour
 
         keystoreJSON = m_keystoreService.EncryptAndGenerateDefaultKeyStoreAsJson(Password.text, m_wallet.GetWalletPrivateKeyAsByte(), accountAddress);
         SaveJSONOnDisk();
-    }    
+
+        Canvas.SetActive(false);
+        LobbyManager.instance.Activate("Account", CreateBlocky());
+
+        //Loader.instance.StopLoad();
+    }
 
     private bool SaveJSONOnDisk()
     {
@@ -91,6 +136,10 @@ public class Account : MonoBehaviour
 
         bf.Serialize(file, keystoreJSON);
         file.Close();
+
+#if UNITY_WEBGL
+            SyncFiles();
+#endif
 
         return true;
     }
@@ -141,6 +190,11 @@ public class Account : MonoBehaviour
         {
             File.Delete(Application.persistentDataPath + "/keystore.ks");
         }
+
+        LobbyManager.instance.Canvas.SetActive(false);
+        Canvas.SetActive(true);
+        Canvas.transform.Find("LinkMethod").gameObject.SetActive(true);
+        Canvas.transform.Find("MnemonicWords").gameObject.SetActive(false);
     }
 
     private string GetPrivateKeyFromKeystore(string pass)
@@ -161,8 +215,29 @@ public class Account : MonoBehaviour
         return myKey.GetPrivateKey();
     }
 
+    private Sprite CreateBlocky(int resolution = 64)
+    {
+        Identicon id = new Identicon(accountAddress, 8);
+        List<Identicon.PixelData> pixels = id.GetIdenticonPixels(resolution);
+
+        Texture2D texture = new Texture2D(resolution, resolution);
+
+        for (int i = 0; i < pixels.Count; ++i)
+        {
+            Color col = new Color(pixels[i].RGB[0] / 255f, pixels[i].RGB[1] / 255f, pixels[i].RGB[2] / 255f);
+            texture.SetPixel(pixels[i].x, resolution - pixels[i].y - 1, col);
+        }
+
+        texture.Apply();
+
+        sp = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+        sp.name = "Blocky";
+
+        return sp;
+    }
+
     #endregion
-    
+
     private IEnumerator getAccountBalance()
     {
         // Now we define a new EthGetBalanceUnityRequest and send it the testnet url where we are going to
@@ -198,7 +273,7 @@ public class Account : MonoBehaviour
         var nexiumBalanceRequest = new EthCallUnityRequest(_url);
         var nexiumBalanceCallInput = m_nexiumContract.Create_balanceOf_Input(accountAddress);
 
-        yield return nexiumBalanceRequest.SendRequest(nexiumBalanceCallInput, Nethereum.RPC.Eth.DTOs.BlockParameter.CreateLatest());        
+        yield return nexiumBalanceRequest.SendRequest(nexiumBalanceCallInput, Nethereum.RPC.Eth.DTOs.BlockParameter.CreateLatest());
 
         // Now we check if the request has an exception
         if (nexiumBalanceRequest.Exception == null)
@@ -222,11 +297,11 @@ public class Account : MonoBehaviour
     IEnumerator NexiumApprove(string spender, BigInteger value)
     {
         string accountPrivateKey = GetPrivateKeyFromKeystore(Password.text);
-        
+
         if (accountPrivateKey == "")
         {
             yield break;
-        }        
+        }
 
         var transactionInput = m_nexiumContract.Create_approve_TransactionInput(
             accountAddress,
@@ -238,13 +313,10 @@ public class Account : MonoBehaviour
             new HexBigInteger(0)
         );
 
-        // Here we create a new signed transaction Unity Request with the url, private key, and the user address we get before
-        // (this will sign the transaction automatically :D )
         var transactionSignedRequest = new TransactionSignedUnityRequest(_url, accountPrivateKey, accountAddress);
 
-        // Then we send it and wait
         yield return transactionSignedRequest.SignAndSendTransaction(transactionInput);
-        
+
         if (transactionSignedRequest.Exception == null)
         {
             // If we don't have exceptions we just display the result, congrats!
@@ -379,7 +451,7 @@ public class Account : MonoBehaviour
         }
     }
     #endregion
-    
+
     #region Space Match Making Contract Calls
     public void SendRequestDuel(Action act)
     {
@@ -401,11 +473,11 @@ public class Account : MonoBehaviour
             new HexBigInteger(10),
             new HexBigInteger(0)
         );
-        
+
         var transactionSignedRequest = new TransactionSignedUnityRequest(_url, accountPrivateKey, accountAddress);
-        
+
         yield return transactionSignedRequest.SignAndSendTransaction(transactionInput);
-        
+
         if (transactionSignedRequest.Exception == null)
         {
             if (act != null)
@@ -443,7 +515,7 @@ public class Account : MonoBehaviour
         var transactionSignedRequest = new TransactionSignedUnityRequest(_url, accountPrivateKey, accountAddress);
 
         yield return transactionSignedRequest.SignAndSendTransaction(transactionInput);
-        
+
         if (transactionSignedRequest.Exception == null)
         {
             if (act != null)
@@ -481,7 +553,7 @@ public class Account : MonoBehaviour
         var transactionSignedRequest = new TransactionSignedUnityRequest(_url, accountPrivateKey, accountAddress);
 
         yield return transactionSignedRequest.SignAndSendTransaction(transactionInput);
-        
+
         if (transactionSignedRequest.Exception == null)
         {
             if (act != null)
@@ -520,7 +592,7 @@ public class Account : MonoBehaviour
         var transactionSignedRequest = new TransactionSignedUnityRequest(_url, accountPrivateKey, accountAddress);
 
         yield return transactionSignedRequest.SignAndSendTransaction(transactionInput);
-        
+
         if (transactionSignedRequest.Exception == null)
         {
             if (act != null)
@@ -531,7 +603,7 @@ public class Account : MonoBehaviour
             Debug.Log("Error Validate Duel: " + transactionSignedRequest.Exception.Message);
         }
     }
-    
+
     public void GetAvailableDuels(Action<BigInteger[]> act)
     {
         StartCoroutine(AvailableDuels(act));
@@ -582,7 +654,7 @@ public class Account : MonoBehaviour
         var transactionSignedRequest = new TransactionSignedUnityRequest(_url, accountPrivateKey, accountAddress);
 
         yield return transactionSignedRequest.SignAndSendTransaction(transactionInput);
-        
+
         if (transactionSignedRequest.Exception == null)
         {
             if (act != null)

@@ -61,13 +61,13 @@ public abstract class PartRenderer : MonoBehaviour
         switch (p_Orientation)
         {
             case Orientation.left:
-                transform.localRotation = Quaternion.Euler(0, 0, -45);
+                transform.localRotation = Quaternion.Euler(0, 0, 45);
                 break;
             case Orientation.middle:
                 transform.localRotation = Quaternion.Euler(0, 0, 0);
                 break;
             case Orientation.right:
-                transform.localRotation = Quaternion.Euler(0, 0, 45);
+                transform.localRotation = Quaternion.Euler(0, 0, -45);
                 break;
         }
     }

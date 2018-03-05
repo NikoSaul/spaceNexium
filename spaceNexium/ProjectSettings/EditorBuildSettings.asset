@@ -6,11 +6,11 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/scene/Global.unity
-    guid: 2f2b6fdeffe1daf489590b1bbfda1993
-  - enabled: 1
     path: Assets/scene/LoginLobby.unity
     guid: c462aa0eb023b7a4087ec8d0d9d9bf02
+  - enabled: 1
+    path: Assets/scene/Global.unity
+    guid: 2f2b6fdeffe1daf489590b1bbfda1993
   - enabled: 1
     path: Assets/scene/Battle.unity
     guid: 37e4ffcbb230f5744be624db078f7607

@@ -43,9 +43,30 @@ public class GenerateShip : MonoBehaviour
 
     private Ship ship;
 
-    private void Awake()
-    {
+    private bool m_b_IsInit = false;
 
+    public void SetCodeGen(string p_s_CodeGen)
+    {
+        codeGen = p_s_CodeGen;
+        Generate();
+    }
+
+    public Ship GetShip()
+    {
+        return ship;
+    }
+
+    private void Start()
+    {
+        Generate();
+    }
+
+    private void Generate()
+    {
+        if(m_b_IsInit)
+            return;
+
+        m_b_IsInit = true;
 
         initColor();
 
@@ -198,13 +219,6 @@ public class GenerateShip : MonoBehaviour
 
     // protection 8
     // 0001010000000000000000000000000000000000000000000000000000000010000000000000000010000011
-
-    // Use this for initialization
-    void Start()
-    {
-
-
-    }
 
     // Update is called once per frame
     void Update()

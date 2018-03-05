@@ -60,7 +60,7 @@ public class Ship : MonoBehaviour
     public void SetCanons(int i, int id, int orientation)
     {
         this.canons[i].SetGeneticAndCreate(id, this.color1, this.color2, this.lightColor);
-        this.m_Slots[slotNumber] = new Slot((SlotType)slotNumber, this.canons[i]);
+        this.m_Slots[slotNumber] = new Weapon((SlotType)slotNumber, this.canons[i], (Orientation)orientation, (Orientation)slotNumber);
         slotNumber++;
     }
 
@@ -74,7 +74,7 @@ public class Ship : MonoBehaviour
         else
         {
             this.protections[i].SetGeneticAndCreate(id, this.color1, this.color2, this.lightColor);
-            this.m_Slots[slotNumber] = new Slot((SlotType)slotNumber, this.protections[i]);
+            this.m_Slots[slotNumber] = new Defense((SlotType)slotNumber, this.protections[i]);
             slotNumber++;
         }
     }
@@ -84,7 +84,7 @@ public class Ship : MonoBehaviour
     {
         this.reactors[i].SetGeneticAndCreate(id, this.color1, this.color2, this.lightColor);
         int tempSlot = Mathf.FloorToInt(id / 4);
-        this.m_Slots[slotNumber] = new Slot((SlotType)slotNumber, this.reactors[i]);
+        this.m_Slots[slotNumber] = new Defense((SlotType)slotNumber, this.reactors[i]);
         slotNumber++;
     }
 
