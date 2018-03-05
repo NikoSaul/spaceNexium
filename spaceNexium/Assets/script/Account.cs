@@ -41,17 +41,13 @@ public class Account : MonoBehaviour
     private SpaceMMContract m_spaceMMContract = new SpaceMMContract();
 
 #if UNITY_WEBGL
+    [DllImport("__Internal")]
+    private static extern void SyncFiles();
+#endif
 
-    public bool ExternalProvider = true;
-    [DllImport("__Internal")]
-    private static extern string GetAccount();
-    [DllImport("__Internal")]
-    private static extern string SendTransaction(string to, string data);
-#else
-    public bool ExternalProvider = false;
     private static string GetAccount () { return null; }
     private static string SendTransaction (string to, string data) { return null; }
-#endif
+
 
 
     void Awake()
@@ -76,10 +72,6 @@ public class Account : MonoBehaviour
         Words[10].text = "camera";
         Words[11].text = "source";
 
-
-#if UNITY_WEBGL
-        StartCoroutine(GetExternalAccount());
-#else
         if (LoadJSONFromDisk())
         {
             if (RetrieveAddressFromKeystore())
@@ -101,36 +93,11 @@ public class Account : MonoBehaviour
             Canvas.transform.Find("LinkMethod").gameObject.SetActive(true);
             Canvas.transform.Find("MnemonicWords").gameObject.SetActive(false);
         }
-#endif
 
         //Loader.instance.StopLoad();
     }
 
     #region Wallet & Keystore
-
-    //This will be used to get the account using metamask, we loop to check for account changes on metamask
-    public IEnumerator GetExternalAccount()
-    {
-        if (ExternalProvider)
-        {
-            var wait = 2;
-            while (accountAddress == "")
-            {
-                yield return new WaitForSeconds(wait);
-                wait = 20;
-                var acc = GetAccount();
-                if (acc == "")
-                {
-                    accountAddress = "";
-                }
-                else
-                {
-                    accountAddress = acc;
-                    LobbyManager.instance.Activate(accountAddress, CreateBlocky());
-                }
-            }
-        }
-    }
 
     public void OpenMnemonic()
     {
@@ -169,6 +136,11 @@ public class Account : MonoBehaviour
 
         bf.Serialize(file, keystoreJSON);
         file.Close();
+
+        if (Application.platform == RuntimePlatform.WebGLPlayer)
+        {
+            SyncFiles();
+        }
 
         return true;
     }
@@ -326,11 +298,11 @@ public class Account : MonoBehaviour
     IEnumerator NexiumApprove(string spender, BigInteger value)
     {
         string accountPrivateKey = GetPrivateKeyFromKeystore(Password.text);
-        
+
         if (accountPrivateKey == "")
         {
             yield break;
-        }        
+        }
 
         var transactionInput = m_nexiumContract.Create_approve_TransactionInput(
             accountAddress,
@@ -342,26 +314,19 @@ public class Account : MonoBehaviour
             new HexBigInteger(0)
         );
 
-        if (ExternalProvider)
+        var transactionSignedRequest = new TransactionSignedUnityRequest(_url, accountPrivateKey, accountAddress);
+
+        yield return transactionSignedRequest.SignAndSendTransaction(transactionInput);
+
+        if (transactionSignedRequest.Exception == null)
         {
-            SendTransaction(transactionInput.To, transactionInput.Data);
+            // If we don't have exceptions we just display the result, congrats!
+            Debug.Log("Nexium approve submitted: " + transactionSignedRequest.Result);
         }
         else
         {
-            var transactionSignedRequest = new TransactionSignedUnityRequest(_url, accountPrivateKey, accountAddress);
-
-            yield return transactionSignedRequest.SignAndSendTransaction(transactionInput);
-
-            if (transactionSignedRequest.Exception == null)
-            {
-                // If we don't have exceptions we just display the result, congrats!
-                Debug.Log("Nexium approve submitted: " + transactionSignedRequest.Result);
-            }
-            else
-            {
-                // if we had an error in the UnityRequest we just display the Exception error
-                Debug.Log("Error submitting Nexium approve: " + transactionSignedRequest.Exception.Message);
-            }
+            // if we had an error in the UnityRequest we just display the Exception error
+            Debug.Log("Error submitting Nexium approve: " + transactionSignedRequest.Exception.Message);
         }
     }
 #endregion
